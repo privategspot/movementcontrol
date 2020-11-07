@@ -1,0 +1,61 @@
+{% load static %}
+
+{% comment %} 
+Базовая разметка для любой страницы на сайте.
+Если это не исключительный случай, то стоит всегда наследовать
+шаблон страницы от этого файла
+
+В контекст необходимо передавать переменную DEBUG.
+Если её значение будет равняться True, то будут подключаться
+неминимизированные библиотеки, иначе минимизированные
+{% endcomment %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block meta_title %}ЗАО НПК "Геотехнология"{% endblock meta_title %}</title>
+
+  {% comment %} Вендорные библиотеки {% endcomment %}
+  <link rel="stylesheet" href="{% static 'vendor/normalize.css' %}">
+  {% if DEBUG %}
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap-4.5.3/css/bootstrap.min.css' %}">
+  {% else %}
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap-4.5.3/css/bootstrap.css' %}">
+  {% endif %}
+
+  {% comment %} Глобальные пользовательские стили {% endcomment %}
+  <link rel="stylesheet" href="{% static 'main/styles/main.css' %}">
+
+  {% comment %} Локальные пользовательские стили {% endcomment %}
+  {% block styles %}
+  {% endblock styles %}
+</head>
+<body>
+  {% comment %} Шапка страницы {% endcomment %}
+  {% include "../includes/page-header.html" %}
+  <main>
+    {% block main_content %}
+    {% endblock main_content %}
+  </main>
+  {% comment %} Подвал страницы {% endcomment %}
+  {% include "../includes/page-footer.html" %}
+
+  {% comment %} Вендорные файлы скриптов {% endcomment %}
+  {% if DEBUG %}
+  <script src="{% static 'vendor/jquery-3.5.1/jquery-3.5.1.slim.js' %}"></script>
+  <script src="{% static 'vendor/bootstrap-4.5.3/js/bootstrap.bundle.js' %}"></script>
+  {% else %}
+  <script src="{% static 'vendor/jquery-3.5.1/jquery-3.5.1.slim.min.js' %}"></script>
+  <script src="{% static 'vendor/bootstrap-4.5.3/js/bootstrap.bundle.min.js' %}"></script>
+  {% endif %}
+
+  {% comment %} Глобальные пользовательские скрипты {% endcomment %}
+  <script src="{% static 'main/scripts/main.js' %}"></script>
+
+  {% comment %} Локальные пользовательские скрипты {% endcomment %}
+  {% block scripts %}
+  {% endblock scripts %}
+</body>
+</html>
