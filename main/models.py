@@ -18,7 +18,7 @@ class FacilityObject(models.Model):
     )
 
     def get_absolute_url(self):
-        return reverse("main:facility-entries-list", kwargs={
+        return reverse("facility-entries-list", kwargs={
             "facility_slug": self.slug,
         })
 
@@ -95,8 +95,8 @@ class AbstractMovementEntry(models.Model):
         (LEAVING, "Отъезд"),
     ]
 
-    list_type = models.CharField(
-        "Тип списка",
+    entry_type = models.CharField(
+        "Тип записи",
         max_length=3,
         choices=TYPES_OF_LIST,
         default=ARRIVING
@@ -141,7 +141,7 @@ class MovementEntry(AbstractMovementEntry):
     )
 
     @property
-    def list_type_humanize(self):
+    def entry_type_humanize(self):
         """
         Метод возвращает человекочитаемую строку,
         определяющую тип списка в именительном падеже
@@ -151,7 +151,7 @@ class MovementEntry(AbstractMovementEntry):
         arriving_value = self.TYPES_OF_LIST[0][1]
         leaving_value = self.TYPES_OF_LIST[1][1]
 
-        if self.list_type == self.ARRIVING:
+        if self.entry_type == self.ARRIVING:
             entry_type = arriving_value
         else:
             entry_type = leaving_value
@@ -178,7 +178,7 @@ class MovementEntry(AbstractMovementEntry):
     def __str__(self):
         datetime = self.scheduled_datetime
         return "Дата %s сотрудника %s: %s.%s.%s %s:%s" % (
-            self.list_type_humanize + "a",
+            self.entry_type_humanize + "a",
             self.employee.full_name,
             datetime.day,
             datetime.month,
