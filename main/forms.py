@@ -32,7 +32,7 @@ class CreateMovementEntryForm(forms.ModelForm):
 
     field_order = [
         "first_name",
-        "second_name",
+        "last_name",
         "patronymic",
         "position",
         "list_type",
