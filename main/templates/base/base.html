@@ -20,9 +20,13 @@
   {% comment %} Вендорные библиотеки {% endcomment %}
   <link rel="stylesheet" href="{% static 'vendor/normalize.css' %}">
   {% if DEBUG %}
-  <link rel="stylesheet" href="{% static 'vendor/bootstrap-4.5.3/css/bootstrap.min.css' %}">
-  {% else %}
   <link rel="stylesheet" href="{% static 'vendor/bootstrap-4.5.3/css/bootstrap.css' %}">
+  <link rel="stylesheet" href="{% static 'vendor/fontawesome-free-5.15.1-web/css/fontawesome.css' %}">
+  <link rel="stylesheet" href="{% static 'vendor/fontawesome-free-5.15.1-web/css/solid.css' %}">
+  {% else %}
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap-4.5.3/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'vendor/fontawesome-free-5.15.1-web/css/fontawesome.min.css' %}">
+  <link rel="stylesheet" href="{% static 'vendor/fontawesome-free-5.15.1-web/css/solid.min.css' %}">
   {% endif %}
 
   {% comment %} Глобальные пользовательские стили {% endcomment %}
@@ -34,7 +38,7 @@
 </head>
 <body>
   {% comment %} Шапка страницы {% endcomment %}
-  {% include "../includes/page-header.html" %}
+  {% include "../includes/page-header.html" with header=header%}
   <main>
     {% block main_content %}
     {% endblock main_content %}
