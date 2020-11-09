@@ -7,5 +7,18 @@
 Для лучшей семантики настоятельно не рекомендуется удалять тег footer
 Всё содержимое шапки сайта должно находиться внутри этого тега
 {% endcomment %}
-<footer>
+
+{% now "Y" as current_year%}
+
+<footer class="container-lg mt-5">
+  <div class="row">
+    <div class="col">
+      <p class="text-center">ЗАО НПК "Геотехнология",<br>
+      2020
+      {% if current_year != "2020" %}
+      - {{ current_year }}
+      {% endif %}
+      </p>
+    </div>
+  </div>
 </footer>
