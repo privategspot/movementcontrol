@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.shortcuts import get_object_or_404, get_list_or_404
 
 from movementcontrol.settings import DEBUG
-from .models import FacilityObject, MovementEntry
+from .models import FacilityObject, MovementEntry, Employee
 from .forms import CreateMovementEntryForm
 
 
@@ -77,3 +77,21 @@ class FacilityAddMovementEntry(FacilityMixin, FormView):
         context["related_facility"] = self.related_facility
         context["facilities"] = self.all_facilities
         return context
+
+    def form_valid(self, form):
+        data = form.cleaned_data
+        employee = Employee.objects.create(
+            first_name=data["first_name"],
+            last_name=data["last_name"],
+            patronymic=data["patronymic"],
+            position=data["position"]
+        )
+        context = self.get_context_data()
+        MovementEntry.objects.create(
+            facility=context["related_facility"],
+            creator=self.request.user,
+            entry_type=data["entry_type"],
+            employee=employee,
+            scheduled_datetime=data["scheduled_datetime"],
+        )
+        return super().form_valid(form)
