@@ -11,7 +11,7 @@ class CreateMovementEntryForm(forms.ModelForm):
         label="Имя сотрудника",
         widget=forms.TextInput(attrs={"placeholder": "Иван"})
     )
-    second_name = forms.CharField(
+    last_name = forms.CharField(
         min_length=2,
         max_length=40,
         label="Фамилия сотрудника",
