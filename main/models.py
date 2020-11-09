@@ -192,7 +192,7 @@ class MovementEntry(AbstractMovementEntry):
         verbose_name_plural = "Записи о заездах/отъездах"
 
 
-class MovementEntryHistory(AbstractMovementEntry):
+class MovementEntryHistory(models.Model):
     """
     История изменений записи
     """
@@ -207,6 +207,10 @@ class MovementEntryHistory(AbstractMovementEntry):
         null=True
     )
     modified_datetime = models.DateTimeField("Время внесения изменений")
+    field_name = models.TextField("Имя измененного поля")
+    field_type = models.TextField("Тип измененного поля")
+    field_old_value = models.TextField("Старое значение поля")
+    field_new_value = models.TextField("Новое значение поля")
 
     class Meta:
         verbose_name = "Состояние записи"
