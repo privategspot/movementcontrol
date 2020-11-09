@@ -1,0 +1,22 @@
+{% extends "../base/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block meta_title %}
+Вход
+{% endblock meta_title %}
+
+{% block main_content %}
+<div class="container-xl">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-sm-8">
+      <div class="card mt-4">
+        {% url 'login' as action %}
+        {% with title="Вход" action=action method="POST" form=form button_value="Войти" next=next %}
+        {% include "../includes/crispy-form.html" %}
+        {% endwith %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock main_content %}

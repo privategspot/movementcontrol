@@ -7,5 +7,41 @@
 Для лучшей семантики настоятельно не рекомендуется удалять тег header
 Всё содержимое шапки сайта должно находиться внутри этого тега
 {% endcomment %}
-<header>
+<header class="container-lg">
+  <div class="row mb-4 align-items-center justify-content-between">
+    <div class="col-md-8 mt-4">
+      <div class="d-flex align-items-center mr-2">
+        <h1>{{ header }}</h1>
+        <div class="dropdown ml-3">
+          <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Сменить объект
+          </a>
+
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            {% for facility in facilities %}
+            {% if facility.name == related_facility.name %}
+            <a class="dropdown-item active" href="{{ facility.get_absolute_url }}">{{ facility.name }}</a>
+            {% else %}
+            <a class="dropdown-item" href="{{ facility.get_absolute_url }}">{{ facility.name }}</a>
+            {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mt-4">
+      <div class="d-flex align-items-center ">
+        {% if user.is_authenticated %}
+        <span style="font-size: 1.2rem;">Добро пожаловать, {{ user }}</span>
+        <a href="{% url 'logout' %}" class="btn btn-primary ml-2">
+          Выйти <i class="fas fa-sign-out-alt"></i>
+        </a>
+        {% else %}
+        <a href="{% url 'login' %}" class="btn btn-primary">
+          Войти <i class="fas fa-sign-in-alt"></i>
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
 </header>
