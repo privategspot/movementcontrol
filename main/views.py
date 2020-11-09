@@ -1,6 +1,7 @@
 from django.views.generic.list import ListView
 from django.views.generic.base import RedirectView
 from django.views.generic.edit import FormView
+from django.views.generic.detail import DetailView
 from django.urls import reverse
 from django.shortcuts import get_object_or_404, get_list_or_404
 
@@ -95,3 +96,11 @@ class FacilityAddMovementEntry(FacilityMixin, FormView):
             scheduled_datetime=data["scheduled_datetime"],
         )
         return super().form_valid(form)
+
+
+class FacilityMovementEntry(DetailView):
+
+    model = MovementEntry
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs)
