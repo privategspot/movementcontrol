@@ -29,7 +29,32 @@ class DefaultRedirect(RedirectView):
     """
 
     permanent = False
-    pattern_name = "facility-entries-list"
+    pattern_name = "facility-lists"
+
+
+class FacilityLists(FacilityMixin, ListView):
+
+    template_name = "main/facility-lists.html"
+    ordering = ["-pk"]
+    paginate_by = 48
+    paginate_orphans = 0
+    context_object_name = "entries"
+
+    @property
+    def queryset(self):
+        return self.related_facility.movementlist_set.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["DEBUG"] = DEBUG
+        context["header"] = self.related_facility.name
+        context["related_facility"] = self.related_facility
+        context["facilities"] = self.all_facilities
+        context["paginator"].baseurl = reverse(
+            "facility-lists",
+            args=[context["related_facility"].slug]
+        ) + "?page="
+        return context
 
 
 class FacilityMovementEntriesList(FacilityMixin, ListView):
@@ -52,9 +77,15 @@ class FacilityMovementEntriesList(FacilityMixin, ListView):
         context["header"] = self.related_facility.name
         context["related_facility"] = self.related_facility
         context["facilities"] = self.all_facilities
+        context["related_list"] = get_object_or_404(
+            self.related_facility.movementlist_set.get(pk=self.list_id)
+        )
         context["paginator"].baseurl = reverse(
             "facility-entries-list",
-            args=[context["related_facility"].slug]
+            args=[
+                context["related_facility"].slug,
+                context["related_list"].pk,
+            ]
         ) + "?page="
         return context
 
@@ -76,6 +107,9 @@ class FacilityAddMovementEntry(FacilityMixin, FormView):
         context["DEBUG"] = DEBUG
         context["header"] = self.related_facility.name
         context["related_facility"] = self.related_facility
+        context["related_list"] = get_object_or_404(
+            self.related_facility.movementlist_set.get(pk=self.list_id)
+        )
         context["facilities"] = self.all_facilities
         return context
 

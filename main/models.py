@@ -18,7 +18,7 @@ class FacilityObject(models.Model):
     )
 
     def get_absolute_url(self):
-        return reverse("facility-entries-list", kwargs={
+        return reverse("facility-lists", kwargs={
             "facility_slug": self.slug,
         })
 
@@ -81,56 +81,50 @@ class User(AbstractUser):
         return full_name
 
 
-class AbstractMovementEntry(models.Model):
-    """
-    Абстрактная модель записи о заезде/отъезде сотрудника.
-    Содержит поля, изменения которых необходимо хранить в
-    модели 'MovementEntryHistory'.
-    """
+class HistoryMixin(models.Model):
 
-    ARRIVING = "ARR"
-    LEAVING = "LVN"
-    TYPES_OF_ENTRY = [
-        (ARRIVING, "Заезд"),
-        (LEAVING, "Отъезд"),
-    ]
-
-    entry_type = models.CharField(
-        "Тип записи",
-        max_length=3,
-        choices=TYPES_OF_ENTRY,
-        default=ARRIVING
+    modified_by = models.OneToOneField(
+        get_user_model(),
+        on_delete=models.SET_NULL,
+        null=True
     )
-    employee = models.OneToOneField(
-        Employee,
-        on_delete=models.RESTRICT,
-        null=True,
-        verbose_name="Заезжающий/отъезжающий сотрудник"
-    )
-    scheduled_datetime = models.DateTimeField("Дата и время заезда/отъезда")
+    modified_datetime = models.DateTimeField("Время внесения изменений")
+    field_name = models.TextField("Имя измененного поля")
+    field_type = models.TextField("Тип измененного поля")
+    field_old_value = models.TextField("Старое значение поля")
+    field_new_value = models.TextField("Новое значение поля")
 
     class Meta:
         abstract = True
 
 
-class MovementEntry(AbstractMovementEntry):
-    """
-    Запись содержащая информацию о заезде/отъезде
-    сотрудников на производственный объект
-    """
+class MovementList(models.Model):
 
     facility = models.ForeignKey(
         FacilityObject,
         on_delete=models.CASCADE,
         verbose_name="Производственный объект"
     )
+
+    ARRIVING = "ARR"
+    LEAVING = "LVN"
+    TYPES_OF_LIST = [
+        (ARRIVING, "Заезд"),
+        (LEAVING, "Отъезд"),
+    ]
+    list_type = models.CharField(
+        "Тип списка",
+        max_length=3,
+        choices=TYPES_OF_LIST,
+        default=ARRIVING
+    )
+    scheduled_datetime = models.DateTimeField("Дата и время заезда/отъезда")
     creator = models.ForeignKey(
         get_user_model(),
         on_delete=models.SET_NULL,
         null=True,
         verbose_name="Кем создана"
     )
-
     creation_datetime = models.DateTimeField(
         "Время создания",
         auto_now_add=True
@@ -141,23 +135,87 @@ class MovementEntry(AbstractMovementEntry):
     )
 
     @property
-    def entry_type_humanize(self):
+    def list_type_humanize(self):
         """
         Метод возвращает человекочитаемую строку,
         определяющую тип списка в именительном падеже
         единственного числа.
         Например: "заезд" или "отъезд".
         """
-        arriving_value = self.TYPES_OF_ENTRY[0][1]
-        leaving_value = self.TYPES_OF_ENTRY[1][1]
+        arriving_value = self.TYPES_OF_LIST[0][1]
+        leaving_value = self.TYPES_OF_LIST[1][1]
 
-        if self.entry_type == self.ARRIVING:
-            entry_type = arriving_value
+        if self.list_type == self.ARRIVING:
+            list_type = arriving_value
         else:
-            entry_type = leaving_value
+            list_type = leaving_value
 
-        humanize = entry_type.lower()
+        humanize = list_type.lower()
         return humanize
+
+    @property
+    def was_changed(self):
+        """
+        Возвращает True, если запись была изменена, иначе False
+        """
+        return True if self.creation_datetime != self.last_modified else False
+
+    def get_absolute_url(self):
+        return reverse("facility-entries-list", kwargs={
+            "facility_slug": self.slug,
+            "list_id": self.pk,
+        })
+
+    def __str__(self):
+        return "Список %sов на %s" % (
+            self.list_type_humanize,
+            self.scheduled_datetime,
+        )
+
+
+class MovementListHistory(HistoryMixin):
+
+    modified_list = models.ForeignKey(
+        MovementList,
+        on_delete=models.CASCADE
+    )
+
+    class Meta:
+        verbose_name = "Состояние списка"
+        verbose_name_plural = "Состояния списков"
+
+
+class MovementEntry(models.Model):
+    """
+    Запись содержащая информацию о заезде/отъезде
+    сотрудников на производственный объект
+    """
+
+    movement_list = models.ForeignKey(
+        MovementList,
+        on_delete=models.CASCADE,
+        verbose_name="Производственный объект"
+    )
+    employee = models.OneToOneField(
+        Employee,
+        on_delete=models.RESTRICT,
+        null=True,
+        verbose_name="Заезжающий/отъезжающий сотрудник"
+    )
+    creator = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name="Кем создана"
+    )
+    creation_datetime = models.DateTimeField(
+        "Время создания",
+        auto_now_add=True
+    )
+    last_modified = models.DateTimeField(
+        "Время последнего изменения",
+        auto_now=True
+    )
 
     @property
     def was_changed(self):
@@ -172,14 +230,13 @@ class MovementEntry(AbstractMovementEntry):
         """
         return reverse("movement-entry", kwargs={
             "facility_slug": self.facility.slug,
-            "pk": self.pk,
+            "list_id": self.movement_list.pk,
+            "entry_id": self.pk,
         })
 
     def __str__(self):
         datetime = self.scheduled_datetime
-        return "Дата %s сотрудника %s: %s.%s.%s %s:%s" % (
-            self.entry_type_humanize + "a",
-            self.employee.full_name,
+        return "Время создания %s.%s.%s %s:%s" % (
             datetime.day,
             datetime.month,
             datetime.year,
@@ -192,25 +249,15 @@ class MovementEntry(AbstractMovementEntry):
         verbose_name_plural = "Записи о заездах/отъездах"
 
 
-class MovementEntryHistory(models.Model):
+class MovementEntryHistory(HistoryMixin):
     """
     История изменений записи
     """
 
     modified_entry = models.ForeignKey(
-        "MovementEntry",
+        MovementEntry,
         on_delete=models.CASCADE
     )
-    modified_by = models.OneToOneField(
-        get_user_model(),
-        on_delete=models.SET_NULL,
-        null=True
-    )
-    modified_datetime = models.DateTimeField("Время внесения изменений")
-    field_name = models.TextField("Имя измененного поля")
-    field_type = models.TextField("Тип измененного поля")
-    field_old_value = models.TextField("Старое значение поля")
-    field_new_value = models.TextField("Новое значение поля")
 
     class Meta:
         verbose_name = "Состояние записи"

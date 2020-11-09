@@ -1,10 +1,7 @@
 from django import forms
-from django.utils import timezone
-
-from .models import MovementEntry
 
 
-class CreateMovementEntryForm(forms.ModelForm):
+class CreateMovementEntryForm(forms.Form):
     first_name = forms.CharField(
         min_length=2,
         max_length=40,
@@ -35,22 +32,4 @@ class CreateMovementEntryForm(forms.ModelForm):
         "last_name",
         "patronymic",
         "position",
-        "list_type",
-        "scheduled_datetime",
     ]
-
-    class Meta:
-        model = MovementEntry
-        fields = ["entry_type", "scheduled_datetime"]
-        labels = {
-            "scheduled_datetime": "Дата заезда/отъезда"
-        }
-        widgets = {
-            "scheduled_datetime": forms.DateTimeInput(
-                attrs={
-                    "placeholder": "25.10.2020 14:30",
-                    "type": "date",
-                    "min": timezone.now().strftime("%Y-%m-%d")
-                }
-            )
-        }
