@@ -1,0 +1,11 @@
+{% load crispy_forms_tags %}
+
+<div class="card-body">
+  <h2 class="card-title h5">{{ title }}</h5>
+  <form action="{{ action }}" method="{{ method }}">
+  {% csrf_token %}
+  {{ form|crispy }}
+  <input type="hidden" name="next" value="{{ next }}">
+  <button type="submit" class="btn btn-primary">{{ button_value }}</button>
+  </form>
+</div>
