@@ -124,7 +124,7 @@ class MovementEntry(AbstractMovementEntry):
         on_delete=models.CASCADE,
         verbose_name="Производственный объект"
     )
-    creator = models.OneToOneField(
+    creator = models.ForeignKey(
         get_user_model(),
         on_delete=models.SET_NULL,
         null=True,
