@@ -170,9 +170,9 @@ class MovementEntry(AbstractMovementEntry):
         """
         Возвращает url записи
         """
-        return reverse("accounting:entry-detail", kwargs={
+        return reverse("movement-entry", kwargs={
             "facility_slug": self.facility.slug,
-            "entry_id": self.pk,
+            "pk": self.pk,
         })
 
     def __str__(self):
