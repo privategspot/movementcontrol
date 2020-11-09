@@ -1,9 +1,20 @@
 from django.urls import path
+from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.decorators import login_required
 
-from .views import DefaultRedirect, FacilityMovementEntriesList
+from .views import DefaultRedirect, FacilityMovementEntriesList,\
+    FacilityAddMovementEntry
 
 
-app_name = "main"
+accounts_urls = [
+    path(
+        "accounts/login/",
+        LoginView.as_view(redirect_authenticated_user=True),
+        name="login"
+    ),
+    path("accounts/logout/", LogoutView.as_view(), name="logout"),
+]
+
 urlpatterns = [
     path(
         "",
@@ -16,4 +27,9 @@ urlpatterns = [
         FacilityMovementEntriesList.as_view(),
         name="facility-entries-list"
     ),
-]
+    path(
+        "facility/<slug:facility_slug>/add/",
+        login_required(FacilityAddMovementEntry.as_view()),
+        name="facility-add-entry"
+    ),
+] + accounts_urls
