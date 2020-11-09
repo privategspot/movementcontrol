@@ -90,7 +90,7 @@ class AbstractMovementEntry(models.Model):
 
     ARRIVING = "ARR"
     LEAVING = "LVN"
-    TYPES_OF_LIST = [
+    TYPES_OF_ENTRY = [
         (ARRIVING, "Заезд"),
         (LEAVING, "Отъезд"),
     ]
@@ -98,7 +98,7 @@ class AbstractMovementEntry(models.Model):
     entry_type = models.CharField(
         "Тип записи",
         max_length=3,
-        choices=TYPES_OF_LIST,
+        choices=TYPES_OF_ENTRY,
         default=ARRIVING
     )
     employee = models.OneToOneField(
@@ -148,8 +148,8 @@ class MovementEntry(AbstractMovementEntry):
         единственного числа.
         Например: "заезд" или "отъезд".
         """
-        arriving_value = self.TYPES_OF_LIST[0][1]
-        leaving_value = self.TYPES_OF_LIST[1][1]
+        arriving_value = self.TYPES_OF_ENTRY[0][1]
+        leaving_value = self.TYPES_OF_ENTRY[1][1]
 
         if self.entry_type == self.ARRIVING:
             entry_type = arriving_value
