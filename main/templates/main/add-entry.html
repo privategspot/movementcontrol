@@ -1,0 +1,36 @@
+{% extends "../base/base.html" %}
+
+{% block meta_title %}
+Добавление записи
+{% endblock meta_title %}
+
+{% block main_content %}
+<div class="container-lg">
+  <div class="row">
+    <div class="col-md">
+      <ul class="nav nav-pills">
+        <li class="nav-item">
+          <a class="nav-link" href="{{ related_facility.get_absolute_url }}">Записи</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="{% url 'facility-add-entry' facility_slug=related_facility.slug %}">
+          Добавить запись
+          <i class="fas fa-plus-circle"></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row mt-2">
+    <div class="col-md">
+      <div class="card mt-4">
+        {% url 'facility-add-entry' facility_slug=related_facility.slug as action %}
+        {% with title="Добавление записи" action=action method="POST" form=form button_value="Создать" %}
+        {% include "../includes/crispy-form.html" %}
+        {% endwith %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock main_content %}

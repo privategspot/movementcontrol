@@ -1,9 +1,74 @@
 {% extends "../base/base.html" %}
 
 {% comment %} 
-Шаблон для отображения списка записей о заезда/отъездах сотрудников
+Шаблон для отображения списка записей о заездах/отъездах сотрудников
 {% endcomment %}
 
+{% block meta_title %}
+{{ related_facility }} | Записи
+{% endblock meta_title %}
+
 {% block main_content %}
-<h1>Список записей</h1>
+<div class="container-lg">
+  <div class="row">
+    <div class="col-md">
+      <ul class="nav nav-pills">
+        <li class="nav-item">
+          <a class="nav-link active" href="{{ related_facility.get_absolute_url }}">Записи</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'facility-add-entry' facility_slug=related_facility.slug %}">
+          Добавить запись
+          <i class="fas fa-plus-circle"></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row mt-2">
+    <div class="col-md">
+      {% if entries.count %}
+      <ul class="list-unstyled mt-4">
+        {% for entry in entries %}
+          <li class="mt-2">
+            <div class="card shadow-sm">
+              <div class="card-body d-flex align-items-center flex-row p-3">
+                <div>
+                  <h5 class="card-title">Список {{ entry.get_list_type_humanize }}ов</h5>
+                  <p class="card-text">Дата создания: {{ entry.creation_datetime }}</p>
+                </div>
+                <a href="{{ entry.get_absolute_url }}" class="btn btn-outline-primary ml-auto">Перейти</a>
+              </div>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="h4 mt-4">Записи отсутствуют</p>
+      {% endif %}
+    </div>
+  </div>
+
+  {% comment %} Пагинация записей {% endcomment %}
+  {% if paginator.num_pages and paginator.num_pages > 1 %}
+  <footer class="row mt-4">
+    <div class="col">
+      <nav>
+        <ul class="pagination justify-content-center">
+          {% for p in paginator.page_range %}
+            {% if p == page_obj.number %}
+              <li class="page-item active">
+            {% else %}
+              <li class="page-item">
+            {% endif %}
+                <a class="page-link" href="{{ paginator.baseurl }}{{ p }}">{{ p }}</a>
+              </li>
+          {% endfor %}
+        </ul>
+      </nav>
+    </div>
+  </footer>
+  {% endif %}
+</div>
 {% endblock main_content %}
