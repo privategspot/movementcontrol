@@ -33,6 +33,9 @@
                 <div>
                   <h5 class="card-title">
                     Список {{ movement_list.list_type_humanize }}ов на {{ movement_list.scheduled_datetime|date:"d E Y" }}
+                    {% if movement_list.was_changed %}
+                    <span class="badge badge-info ml-1">Изменено</span>
+                    {% endif %}
                   </h5>
                   <p class="card-text">
                     Создан {{ movement_list.creation_datetime }} пользователем {{ movement_list.creator.full_name }}
