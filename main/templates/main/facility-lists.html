@@ -1,1 +1,53 @@
 {% extends "../base/base.html" %}
+
+{% block meta_title %}
+{{ related_facility.name }} | Списки
+{% endblock meta_title %}
+
+{% block main_content %}
+<div class="container-lg">
+  <div class="row">
+    <div class="col-md">
+      <ul class="nav nav-pills">
+        <li class="nav-item">
+          <a class="nav-link active" href="{{ related_facility.get_absolute_url }}">Списки</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'facility-lists-add' facility_slug=related_facility.slug %}">
+          Добавить список
+          <i class="fas fa-plus-circle"></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row mt-2">
+    <div class="col-md">
+      {% if movement_lists %}
+      <ul class="list-unstyled mt-4">
+        {% for movement_list in movement_lists %}
+        <li class="mt-2">
+            <div class="card shadow-sm">
+              <div class="card-body d-flex align-items-center flex-row p-3">
+                <div>
+                  <h5 class="card-title">
+                    Список {{ movement_list.list_type_humanize }}ов на {{ movement_list.scheduled_datetime|date:"d E Y" }}
+                  </h5>
+                  <p class="card-text">
+                    Создан {{ movement_list.creation_datetime }} пользователем {{ movement_list.creator.full_name }}
+                  </p>
+                </div>
+                <a href="{{ movement_list.get_absolute_url }}" class="btn btn-outline-primary ml-auto">Перейти</a>
+              </div>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <h2 class="h5 mt-4">Списки отсутствуют</h2>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock main_content %}
