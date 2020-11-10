@@ -6,8 +6,8 @@ from django.urls import reverse
 from django.shortcuts import get_object_or_404, get_list_or_404
 
 from movementcontrol.settings import DEBUG
-from .models import FacilityObject, MovementEntry, Employee
-from .forms import CreateMovementEntryForm
+from .models import FacilityObject, MovementEntry, Employee, MovementList
+from .forms import CreateMovementEntryForm, CreateMovementListForm
 
 
 class FacilityMixin:
@@ -55,6 +55,37 @@ class FacilityLists(FacilityMixin, ListView):
             args=[context["related_facility"].slug]
         ) + "?page="
         return context
+
+
+class AddMovementList(FacilityMixin, FormView):
+
+    template_name = "main/add-list.html"
+    form_class = CreateMovementListForm
+
+    @property
+    def success_url(self):
+        return reverse(
+            "facility-lists-add",
+            args=[self.get_context_data()["related_facility"].slug]
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["DEBUG"] = DEBUG
+        context["header"] = self.related_facility.name
+        context["related_facility"] = self.related_facility
+        context["facilities"] = self.all_facilities
+        return context
+
+    def form_valid(self, form):
+        data = form.cleaned_data
+        MovementList.objects.create(
+            facility=self.related_facility,
+            list_type=data["list_type"],
+            scheduled_datetime=data["scheduled_datetime"],
+            creator=self.request.user,
+        )
+        return super().form_valid(form)
 
 
 class FacilityMovementEntriesList(FacilityMixin, ListView):

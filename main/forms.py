@@ -1,4 +1,26 @@
 from django import forms
+from django.utils import timezone
+
+from .models import MovementList
+
+
+class CreateMovementListForm(forms.ModelForm):
+
+    class Meta:
+        model = MovementList
+        fields = ["list_type", "scheduled_datetime"]
+        labels = {
+            "scheduled_datetime": "Дата заезда/отъезда"
+        }
+        widgets = {
+            "scheduled_datetime": forms.DateTimeInput(
+                attrs={
+                    "placeholder": "25.10.2020 14:30",
+                    "type": "date",
+                    "min": timezone.now().strftime("%Y-%m-%d")
+                }
+            )
+        }
 
 
 class CreateMovementEntryForm(forms.Form):
