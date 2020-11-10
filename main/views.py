@@ -38,7 +38,7 @@ class FacilityLists(FacilityMixin, ListView):
     ordering = ["-pk"]
     paginate_by = 48
     paginate_orphans = 0
-    context_object_name = "entries"
+    context_object_name = "movement_lists"
 
     @property
     def queryset(self):
