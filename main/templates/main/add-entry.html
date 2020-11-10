@@ -8,6 +8,7 @@
 <div class="container-lg">
   <div class="row">
     <div class="col-md">
+      <h2 class="h3 mb-4">Список {{ related_list.list_type_humanize }}ов на {{ related_list.scheduled_datetime|date:"d E Y" }}</h2>
       <ul class="nav nav-pills">
         <li class="nav-item">
           <a class="nav-link" href="{{ related_list.get_absolute_url }}">Записи</a>
