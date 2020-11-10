@@ -1,0 +1,29 @@
+{% extends "../base/base.html" %}
+
+{% block meta_title %}
+Подробности
+{% endblock meta_title %}
+
+{% block main_content %}
+<div class="container-lg">
+  <div class="row">
+    <div class="col-md">
+      <ul class="nav nav-pills">
+        <li class="nav-item ml-auto">
+          <a href="{{ related_list.get_absolute_url }}" class="nav-link btn btn-outline-primary">
+          <i class="fas fa-chevron-left pr-1"></i>
+          Назад
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row mt-2">
+    <div class="col-md">
+      <h2 class="h4">{{ entry.employee.full_name }}</h2>
+      <p>{{ entry.employee.position }}</p>
+    </div>
+  </div>
+</div>
+{% endblock main_content %}

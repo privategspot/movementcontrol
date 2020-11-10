@@ -164,9 +164,17 @@ class FacilityAddMovementEntry(FacilityListMixin, FormView):
         return super().form_valid(form)
 
 
-class FacilityMovementEntry(DetailView):
+class FacilityMovementEntry(FacilityListMixin, DetailView):
 
+    template_name = "main/entry-detail.html"
+    context_object_name = "entry"
     model = MovementEntry
 
     def get_context_data(self, **kwargs):
-        return super().get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+        context["DEBUG"] = DEBUG
+        context["header"] = self.related_facility.name
+        context["related_facility"] = self.related_facility
+        context["related_list"] = self.related_list
+        context["facilities"] = self.all_facilities
+        return context
