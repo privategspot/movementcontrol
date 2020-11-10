@@ -29,12 +29,12 @@ urlpatterns = [
         name="facility-lists"
     ),
     path(
-        "facility/<slug:facility_slug>/add",
+        "facility/<slug:facility_slug>/add/",
         login_required(AddMovementList.as_view()),
         name="facility-lists-add",
     ),
     path(
-        "facility/<slug:facility_slug>/list/<int:list_id>",
+        "facility/<slug:facility_slug>/list/<int:list_id>/",
         FacilityMovementEntriesList.as_view(),
         name="facility-entries-list"
     ),
@@ -44,7 +44,7 @@ urlpatterns = [
         name="facility-add-entry"
     ),
     path(
-        "facility/<slug:facility_slug>/list/<int:list_id>/entry/<int:entry_id>/",
+        "facility/<slug:facility_slug>/list/<int:list_id>/entry/<int:pk>/",
         FacilityMovementEntry.as_view(),
         name="movement-entry"
     )

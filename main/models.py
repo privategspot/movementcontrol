@@ -229,9 +229,9 @@ class MovementEntry(models.Model):
         Возвращает url записи
         """
         return reverse("movement-entry", kwargs={
-            "facility_slug": self.facility.slug,
+            "facility_slug": self.movement_list.facility.slug,
             "list_id": self.movement_list.pk,
-            "entry_id": self.pk,
+            "pk": self.pk,
         })
 
     def __str__(self):

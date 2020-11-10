@@ -23,6 +23,15 @@ class FacilityMixin:
         return get_list_or_404(FacilityObject.objects.all())
 
 
+class FacilityListMixin(FacilityMixin):
+
+    @property
+    def related_list(self):
+        return get_object_or_404(
+            MovementList, pk=self.kwargs["list_id"]
+        )
+
+
 class DefaultRedirect(RedirectView):
     """
     Редирект на страницу производственного объекта по умолчанию
@@ -65,7 +74,7 @@ class AddMovementList(FacilityMixin, FormView):
     @property
     def success_url(self):
         return reverse(
-            "facility-lists-add",
+            "facility-lists",
             args=[self.get_context_data()["related_facility"].slug]
         )
 
@@ -88,7 +97,7 @@ class AddMovementList(FacilityMixin, FormView):
         return super().form_valid(form)
 
 
-class FacilityMovementEntriesList(FacilityMixin, ListView):
+class FacilityMovementEntriesList(FacilityListMixin, ListView):
 
     template_name = "main/entries-list.html"
     ordering = ["-pk"]
@@ -98,9 +107,7 @@ class FacilityMovementEntriesList(FacilityMixin, ListView):
 
     @property
     def queryset(self):
-        return MovementEntry.objects.filter(
-            facility__slug=self.kwargs["facility_slug"]
-        )
+        return self.related_list.movemententry_set.all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -108,9 +115,7 @@ class FacilityMovementEntriesList(FacilityMixin, ListView):
         context["header"] = self.related_facility.name
         context["related_facility"] = self.related_facility
         context["facilities"] = self.all_facilities
-        context["related_list"] = get_object_or_404(
-            self.related_facility.movementlist_set.get(pk=self.list_id)
-        )
+        context["related_list"] = self.related_list
         context["paginator"].baseurl = reverse(
             "facility-entries-list",
             args=[
@@ -121,16 +126,17 @@ class FacilityMovementEntriesList(FacilityMixin, ListView):
         return context
 
 
-class FacilityAddMovementEntry(FacilityMixin, FormView):
+class FacilityAddMovementEntry(FacilityListMixin, FormView):
 
     template_name = "main/add-entry.html"
     form_class = CreateMovementEntryForm
 
     @property
     def success_url(self):
+        context = self.get_context_data()
         return reverse(
             "facility-entries-list",
-            args=[self.get_context_data()["related_facility"].slug]
+            args=[context["related_facility"].slug, self.kwargs["list_id"]]
         )
 
     def get_context_data(self, **kwargs):
@@ -138,9 +144,7 @@ class FacilityAddMovementEntry(FacilityMixin, FormView):
         context["DEBUG"] = DEBUG
         context["header"] = self.related_facility.name
         context["related_facility"] = self.related_facility
-        context["related_list"] = get_object_or_404(
-            self.related_facility.movementlist_set.get(pk=self.list_id)
-        )
+        context["related_list"] = self.related_list
         context["facilities"] = self.all_facilities
         return context
 
@@ -152,13 +156,10 @@ class FacilityAddMovementEntry(FacilityMixin, FormView):
             patronymic=data["patronymic"],
             position=data["position"]
         )
-        context = self.get_context_data()
         MovementEntry.objects.create(
-            facility=context["related_facility"],
+            movement_list=self.related_list,
             creator=self.request.user,
-            entry_type=data["entry_type"],
             employee=employee,
-            scheduled_datetime=data["scheduled_datetime"],
         )
         return super().form_valid(form)
 
