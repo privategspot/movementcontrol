@@ -162,7 +162,7 @@ class MovementList(models.Model):
 
     def get_absolute_url(self):
         return reverse("facility-entries-list", kwargs={
-            "facility_slug": self.slug,
+            "facility_slug": self.facility.slug,
             "list_id": self.pk,
         })
 
