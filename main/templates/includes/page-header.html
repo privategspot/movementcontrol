@@ -30,14 +30,16 @@
       </div>
     </div>
     <div class="col-md-4 mt-4">
-      <div class="d-flex align-items-center ">
+      <div class="d-flex align-items-center">
         {% if user.is_authenticated %}
-        <span style="font-size: 1.2rem;">Добро пожаловать, {{ user.first_name }}</span>
-        <a href="{% url 'logout' %}" class="btn btn-primary ml-2">
-          Выйти <i class="fas fa-sign-out-alt"></i>
-        </a>
+        <div class="d-flex justify-content-end align-items-center">
+          <span style="font-size: 1.2rem;">Добро пожаловать, {{ user.first_name }}</span>
+          <a href="{% url 'logout' %}" class="btn btn-primary ml-2">
+            Выйти <i class="fas fa-sign-out-alt"></i>
+          </a>
+        </div>
         {% else %}
-        <a href="{% url 'login' %}" class="btn btn-primary">
+        <a href="{% url 'login' %}" class="btn btn-primary ml-auto">
           Войти <i class="fas fa-sign-in-alt"></i>
         </a>
         {% endif %}
