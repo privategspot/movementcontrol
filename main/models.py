@@ -89,10 +89,7 @@ class HistoryMixin(models.Model):
         null=True
     )
     modified_datetime = models.DateTimeField("Время внесения изменений")
-    field_name = models.TextField("Имя измененного поля")
-    field_type = models.TextField("Тип измененного поля")
-    field_old_value = models.TextField("Старое значение поля")
-    field_new_value = models.TextField("Новое значение поля")
+    serialized_model_delta = models.TextField("Сериализованные изменения")
 
     class Meta:
         abstract = True

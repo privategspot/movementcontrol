@@ -5,6 +5,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView
 from django.urls import reverse
 from django.utils import timezone
+from django.core import serializers
 from django.shortcuts import get_object_or_404, get_list_or_404
 
 from movementcontrol.settings import DEBUG
@@ -133,10 +134,11 @@ class EditMovementList(FacilityListMixin, UpdateView):
             modified_list=cur_list,
             modified_by=self.request.user,
             modified_datetime=timezone.now(),
-            field_name="scheduled_datetime",
-            field_type=cur_list.scheduled_datetime.__class__.__name__,
-            field_old_value=cur_list.scheduled_datetime,
-            field_new_value=data["scheduled_datetime"]
+            serialized_model_delta=serializers.serialize(
+                "xml",
+                self.get_object(),
+                fields=("scheduled_datetime")
+            )
         )
         cur_list.scheduled_datetime = data["scheduled_datetime"]
         return super().form_valid(form)
