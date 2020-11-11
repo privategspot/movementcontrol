@@ -23,6 +23,25 @@ class CreateMovementListForm(forms.ModelForm):
         }
 
 
+class EditMovementListForm(forms.ModelForm):
+
+    class Meta:
+        model = MovementList
+        fields = ["scheduled_datetime"]
+        labels = {
+            "scheduled_datetime": "Дата заезда/отъезда"
+        }
+        widgets = {
+            "scheduled_datetime": forms.DateTimeInput(
+                attrs={
+                    "placeholder": "25.10.2020 14:30",
+                    "type": "date",
+                    "min": timezone.now().strftime("%Y-%m-%d")
+                }
+            )
+        }
+
+
 class CreateMovementEntryForm(forms.Form):
     first_name = forms.CharField(
         min_length=2,

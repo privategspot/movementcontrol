@@ -41,7 +41,12 @@
                     Создан {{ movement_list.creation_datetime }} пользователем {{ movement_list.creator.full_name }}
                   </p>
                 </div>
-                <a href="{{ movement_list.get_absolute_url }}" class="btn btn-outline-primary ml-auto">Перейти</a>
+                <div class="d-flex align-items-center ml-auto">
+                  <a href="{% url 'facility-entries-list-edit' facility_slug=related_facility.slug list_id=movement_list.pk %}" class="mr-4">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <a href="{{ movement_list.get_absolute_url }}" class="btn btn-outline-primary">Перейти</a>
+                </div>
               </div>
             </div>
           </li>

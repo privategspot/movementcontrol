@@ -2,12 +2,16 @@ from django.views.generic.list import ListView
 from django.views.generic.base import RedirectView
 from django.views.generic.edit import FormView
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import UpdateView
 from django.urls import reverse
+from django.utils import timezone
 from django.shortcuts import get_object_or_404, get_list_or_404
 
 from movementcontrol.settings import DEBUG
-from .models import FacilityObject, MovementEntry, Employee, MovementList
-from .forms import CreateMovementEntryForm, CreateMovementListForm
+from .models import FacilityObject, MovementEntry, Employee, MovementList,\
+    MovementListHistory
+from .forms import CreateMovementEntryForm, CreateMovementListForm,\
+    EditMovementListForm
 
 
 class FacilityMixin:
@@ -94,6 +98,47 @@ class AddMovementList(FacilityMixin, FormView):
             scheduled_datetime=data["scheduled_datetime"],
             creator=self.request.user,
         )
+        return super().form_valid(form)
+
+
+class EditMovementList(FacilityListMixin, UpdateView):
+
+    form_class = EditMovementListForm
+    template_name = "main/edit-list.html"
+    pk_url_kwarg = "list_id"
+
+    @property
+    def success_url(self):
+        return reverse(
+            "facility-lists",
+            args=[self.kwargs["facility_slug"]]
+        )
+
+    def get_object(self):
+        return self.related_list
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["DEBUG"] = DEBUG
+        context["header"] = self.related_facility.name
+        context["related_facility"] = self.related_facility
+        context["facilities"] = self.all_facilities
+        context["related_list"] = self.related_list
+        return context
+
+    def form_valid(self, form):
+        data = form.cleaned_data
+        cur_list = self.related_list
+        MovementListHistory.objects.create(
+            modified_list=cur_list,
+            modified_by=self.request.user,
+            modified_datetime=timezone.now(),
+            field_name="scheduled_datetime",
+            field_type=cur_list.scheduled_datetime.__class__.__name__,
+            field_old_value=cur_list.scheduled_datetime,
+            field_new_value=data["scheduled_datetime"]
+        )
+        cur_list.scheduled_datetime = data["scheduled_datetime"]
         return super().form_valid(form)
 
 
