@@ -52,7 +52,12 @@
                     Создана {{ entry.creation_datetime }} пользователем {{ entry.creator.full_name }}
                   </p>
                 </div>
-                <a href="{{ entry.get_absolute_url }}" class="btn btn-outline-primary ml-auto">Перейти</a>
+                <div class="d-flex align-items-center ml-auto">
+                  <a href="#" class="mr-4">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <a href="{{ entry.get_absolute_url }}" class="btn btn-outline-primary ml-auto">Перейти</a>
+                </div>
               </div>
             </div>
           </li>
