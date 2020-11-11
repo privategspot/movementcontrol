@@ -136,12 +136,47 @@ class EditMovementList(FacilityListMixin, UpdateView):
             modified_datetime=timezone.now(),
             serialized_model_delta=serializers.serialize(
                 "xml",
-                self.get_object(),
+                self.related_facility.movementlist_set.filter(
+                    pk=self.kwargs["list_id"]
+                ),
                 fields=("scheduled_datetime")
             )
         )
         cur_list.scheduled_datetime = data["scheduled_datetime"]
         return super().form_valid(form)
+
+
+class MovementListHistoryView(FacilityListMixin, ListView):
+
+    template_name = "main/facility-list-history.html"
+    context_object_name = "history_entries"
+
+    def get_queryset(self):
+        queryset = self.related_list.movementlisthistory_set.all()
+        queryset = queryset.order_by("-pk")
+        data = []
+
+        for obj in queryset:
+            deserialized_data = []
+            for deserialized_object in serializers.deserialize(
+                "xml", obj.serialized_model_delta
+            ):
+                deserialized_data.append(deserialized_object.object)
+
+            data.append(
+                {"obj": obj, "deserialized_data": deserialized_data[0]}
+            )
+
+        return data
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["DEBUG"] = DEBUG
+        context["header"] = self.related_facility.name
+        context["related_facility"] = self.related_facility
+        context["facilities"] = self.all_facilities
+        context["related_list"] = self.related_list
+        return context
 
 
 class FacilityMovementEntriesList(FacilityListMixin, ListView):

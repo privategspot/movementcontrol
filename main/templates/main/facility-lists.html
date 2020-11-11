@@ -45,6 +45,14 @@
                   <a href="{% url 'facility-entries-list-edit' facility_slug=related_facility.slug list_id=movement_list.pk %}" class="mr-4">
                     <i class="fas fa-edit"></i>
                   </a>
+                  {% if movement_list.was_changed %}
+                  <a 
+                    href="{% url 'facility-entries-list-history' facility_slug=related_facility.slug list_id=movement_list.pk %}" 
+                    class="btn btn-outline-info mr-2"
+                  >
+                    История
+                  </a>
+                  {% endif %}
                   <a href="{{ movement_list.get_absolute_url }}" class="btn btn-outline-primary">Перейти</a>
                 </div>
               </div>

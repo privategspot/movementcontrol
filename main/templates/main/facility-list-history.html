@@ -1,0 +1,46 @@
+{% extends "../base/base.html" %}
+
+{% block meta_title %}
+
+{% endblock meta_title %}
+
+{% block main_content %}
+<div class="container-lg">
+  <div class="row">
+    <div class="col-md">
+      <h2 class="h3">
+        Список {{ related_list.list_type_humanize }}ов на {{ related_list.scheduled_datetime|date:"d E Y" }}
+      </h2>
+      <ul class="nav nav-pills">
+        <li class="nav-item ml-auto">
+          <a href="{{ related_facility.get_absolute_url }}" class="nav-link btn btn-outline-primary">
+          <i class="fas fa-chevron-left pr-1"></i>
+          Назад
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md">
+      <div class="card mt-4">
+        <div class="card-body">
+          {% if history_entries %}
+          <h3 class="h4 font-weight-mb-4 card-title">История изменений</h3>
+          <ul class="list-unstyled">
+              {% for entry in history_entries %}
+              <p>
+              {{ related_list.list_type_humanize|title }} был перенесён пользователем {{ entry.obj.modified_by.full_name }}
+              в {{ entry.obj.modified_datetime|date:"H:i d.m.Y" }} на {{ entry.deserialized_data.scheduled_datetime|date:"d E Y" }}
+              </p>
+              {% endfor %}
+          </ul>
+          {% else %}
+          <h3 class="h5 card-title">Записи отсутствуют</h2>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock main_content %}
