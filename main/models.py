@@ -83,7 +83,7 @@ class User(AbstractUser):
 
 class HistoryMixin(models.Model):
 
-    modified_by = models.OneToOneField(
+    modified_by = models.ForeignKey(
         get_user_model(),
         on_delete=models.SET_NULL,
         null=True
