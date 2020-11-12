@@ -29,6 +29,10 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 INTERNAL_IPS = ["127.0.0.1"]
 
+# Auth settings
+AUTH_USER_MODEL = 'main.User'
+LOGIN_REDIRECT_URL = "redirect-to-default-facility-list"
+LOGOUT_REDIRECT_URL = "redirect-to-default-facility-list"
 
 # Application definition
 
@@ -43,7 +47,6 @@ INSTALLED_APPS = [
     'main',
 ]
 
-AUTH_USER_MODEL = 'main.User'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [
@@ -105,7 +108,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
