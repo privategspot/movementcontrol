@@ -49,7 +49,7 @@ class FacilityLists(FacilityMixin, ListView):
 
     template_name = "main/facility-lists.html"
     ordering = ["-pk"]
-    paginate_by = 48
+    paginate_by = 10
     paginate_orphans = 0
     context_object_name = "movement_lists"
 

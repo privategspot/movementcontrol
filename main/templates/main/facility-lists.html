@@ -6,7 +6,7 @@
 
 {% block main_content %}
 <div class="container-lg">
-  <div class="row">
+  <header class="row">
     <div class="col-md">
       <ul class="nav nav-pills">
         <li class="nav-item">
@@ -20,7 +20,7 @@
         </li>
       </ul>
     </div>
-  </div>
+  </header>
 
 
   <div class="row mt-4">
@@ -88,5 +88,13 @@
       {% endif %}
     </div>
   </div>
+
+  {% if paginator.num_pages > 1 %}
+  <footer class="row mt-4">
+    <div class="col">
+      {% include "../includes/paginator.html" %}
+    </div>
+  </footer>
+  {% endif %}
 </div>
 {% endblock main_content %}
