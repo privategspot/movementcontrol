@@ -89,7 +89,8 @@ class HistoryMixin(models.Model):
         null=True
     )
     modified_datetime = models.DateTimeField("Время внесения изменений")
-    serialized_model_delta = models.TextField("Сериализованные изменения")
+    serialized_prev_delta = models.TextField("Данные до изменения")
+    serialized_post_delta = models.TextField("Данные после изменения")
 
     class Meta:
         abstract = True
