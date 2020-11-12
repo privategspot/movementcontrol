@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.core import serializers
 from django.shortcuts import get_object_or_404, get_list_or_404
-
+from django.contrib import messages
 from .models import FacilityObject, MovementEntry, Employee, MovementList,\
     MovementListHistory
 from .forms import CreateMovementEntryForm, CreateMovementListForm,\
@@ -96,6 +96,7 @@ class AddMovementList(FacilityMixin, FormView):
             scheduled_datetime=data["scheduled_datetime"],
             creator=self.request.user,
         )
+        messages.success(self.request, "Список успешно добавлен")
         return super().form_valid(form)
 
 
@@ -115,6 +116,10 @@ class DeleteMovementList(FacilityListMixin, DeleteView):
         context["facilities"] = self.all_facilities
         context["related_list"] = self.related_list
         return context
+
+    def post(self, request, *args, **kwargs):
+        messages.success(self.request, "Список успешно удалён")
+        return super().post(request, *args, **kwargs)
 
 
 class EditMovementList(FacilityListMixin, UpdateView):
@@ -157,6 +162,7 @@ class EditMovementList(FacilityListMixin, UpdateView):
             )
         )
         cur_list.scheduled_datetime = data["scheduled_datetime"]
+        messages.success(self.request, "Список успешно изменён")
         return super().form_valid(form)
 
 
@@ -254,6 +260,7 @@ class FacilityAddMovementEntry(FacilityListMixin, FormView):
             creator=self.request.user,
             employee=employee,
         )
+        messages.success(self.request, "Запись успешно добавлена")
         return super().form_valid(form)
 
 
