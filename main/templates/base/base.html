@@ -4,10 +4,6 @@
 Базовая разметка для любой страницы на сайте.
 Если это не исключительный случай, то стоит всегда наследовать
 шаблон страницы от этого файла
-
-В контекст необходимо передавать переменную DEBUG.
-Если её значение будет равняться True, то будут подключаться
-неминимизированные библиотеки, иначе минимизированные
 {% endcomment %}
 
 <!DOCTYPE html>
@@ -19,7 +15,7 @@
 
   {% comment %} Вендорные библиотеки {% endcomment %}
   <link rel="stylesheet" href="{% static 'vendor/normalize.css' %}">
-  {% if DEBUG %}
+  {% if debug %}
   <link rel="stylesheet" href="{% static 'vendor/bootstrap-4.5.3/css/bootstrap.css' %}">
   <link rel="stylesheet" href="{% static 'vendor/fontawesome-free-5.15.1-web/css/fontawesome.css' %}">
   <link rel="stylesheet" href="{% static 'vendor/fontawesome-free-5.15.1-web/css/solid.css' %}">
@@ -47,7 +43,7 @@
   {% include "../includes/page-footer.html" %}
 
   {% comment %} Вендорные файлы скриптов {% endcomment %}
-  {% if DEBUG %}
+  {% if debug %}
   <script src="{% static 'vendor/jquery-3.5.1/jquery-3.5.1.slim.js' %}"></script>
   <script src="{% static 'vendor/bootstrap-4.5.3/js/bootstrap.bundle.js' %}"></script>
   {% else %}

@@ -8,7 +8,6 @@ from django.utils import timezone
 from django.core import serializers
 from django.shortcuts import get_object_or_404, get_list_or_404
 
-from movementcontrol.settings import DEBUG
 from .models import FacilityObject, MovementEntry, Employee, MovementList,\
     MovementListHistory
 from .forms import CreateMovementEntryForm, CreateMovementListForm,\
@@ -60,7 +59,6 @@ class FacilityLists(FacilityMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["DEBUG"] = DEBUG
         context["header"] = self.related_facility.name
         context["related_facility"] = self.related_facility
         context["facilities"] = self.all_facilities
@@ -85,7 +83,6 @@ class AddMovementList(FacilityMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["DEBUG"] = DEBUG
         context["header"] = self.related_facility.name
         context["related_facility"] = self.related_facility
         context["facilities"] = self.all_facilities
@@ -113,7 +110,6 @@ class DeleteMovementList(FacilityListMixin, DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["DEBUG"] = DEBUG
         context["header"] = self.related_facility.name
         context["related_facility"] = self.related_facility
         context["facilities"] = self.all_facilities
@@ -139,7 +135,6 @@ class EditMovementList(FacilityListMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["DEBUG"] = DEBUG
         context["header"] = self.related_facility.name
         context["related_facility"] = self.related_facility
         context["facilities"] = self.all_facilities
@@ -190,7 +185,6 @@ class MovementListHistoryView(FacilityListMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["DEBUG"] = DEBUG
         context["header"] = self.related_facility.name
         context["related_facility"] = self.related_facility
         context["facilities"] = self.all_facilities
@@ -212,7 +206,6 @@ class FacilityMovementEntriesList(FacilityListMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["DEBUG"] = DEBUG
         context["header"] = self.related_facility.name
         context["related_facility"] = self.related_facility
         context["facilities"] = self.all_facilities
@@ -242,7 +235,6 @@ class FacilityAddMovementEntry(FacilityListMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["DEBUG"] = DEBUG
         context["header"] = self.related_facility.name
         context["related_facility"] = self.related_facility
         context["related_list"] = self.related_list
@@ -273,7 +265,6 @@ class FacilityMovementEntry(FacilityListMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["DEBUG"] = DEBUG
         context["header"] = self.related_facility.name
         context["related_facility"] = self.related_facility
         context["related_list"] = self.related_list
