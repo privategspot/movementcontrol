@@ -11,6 +11,7 @@
       <h2 class="h3">
         Список {{ related_list.list_type_humanize }}ов на {{ related_list.scheduled_datetime|date:"d E Y" }}
       </h2>
+      <h3 class="h4 font-weight-mb-4 card-title">История изменений</h3>
       <ul class="nav nav-pills">
         <li class="nav-item ml-auto">
           <a href="{{ related_facility.get_absolute_url }}" class="nav-link btn btn-outline-primary">
@@ -23,22 +24,26 @@
   </div>
   <div class="row">
     <div class="col-md">
-      <div class="card mt-4">
-        <div class="card-body">
-          {% if history_entries %}
-          <h3 class="h4 font-weight-mb-4 card-title">История изменений</h3>
-          <ul class="list-unstyled">
-              {% for entry in history_entries %}
-              <p>
-              {{ related_list.list_type_humanize|title }} был перенесён пользователем {{ entry.obj.modified_by.full_name }}
-              в {{ entry.obj.modified_datetime|date:"H:i d.m.Y" }} на {{ entry.deserialized_data.scheduled_datetime|date:"d E Y" }}
+      <div class="mt-4">
+        {% if history_entries %}
+        <ul class="list-unstyled">
+          {% for entry in history_entries %}
+          <li class="card shadow-sm mt-2">
+            <div class="card-body">
+              <h4 class="card-title h5">
+              Перенос с {{ entry.prev_change.scheduled_datetime|date:"d E Y" }} 
+              на {{ entry.post_change.scheduled_datetime|date:"d E Y" }}
+              </h4>
+              <p class="card-text">
+              {{ entry.entry.modified_by.full_name }} в {{ entry.entry.modified_datetime|date:"H:i d.m.Y" }}
               </p>
-              {% endfor %}
-          </ul>
-          {% else %}
-          <h3 class="h5 card-title">Нет изменений</h2>
-          {% endif %}
-        </div>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <h3 class="h5 card-title">Нет изменений</h2>
+        {% endif %}
       </div>
     </div>
   </div>

@@ -147,21 +147,38 @@ class EditMovementList(FacilityListMixin, UpdateView):
         return context
 
     def form_valid(self, form):
+        xml_serializer = serializers.get_serializer("xml")()
         data = form.cleaned_data
         cur_list = self.related_list
+        queryset_with_cur_list = self.related_facility.movementlist_set.filter(
+            pk=self.kwargs["list_id"]
+        )
+
+        # Сериализируем данные до внесения изменения
+        old_data = xml_serializer.serialize(
+            queryset_with_cur_list,
+            fields=("scheduled_datetime")
+        )
+
+        # вносим изменения
+        queryset_with_cur_list[0].scheduled_datetime = data["scheduled_datetime"]
+        queryset_with_cur_list[0].save(update_fields=["scheduled_datetime"])
+
+        # Сериализируем данные после внесения изменения
+        new_data = xml_serializer.serialize(
+            queryset_with_cur_list,
+            fields=("scheduled_datetime")
+        )
+
+        # добавляем запись в историю
         MovementListHistory.objects.create(
             modified_list=cur_list,
             modified_by=self.request.user,
             modified_datetime=timezone.now(),
-            serialized_model_delta=serializers.serialize(
-                "xml",
-                self.related_facility.movementlist_set.filter(
-                    pk=self.kwargs["list_id"]
-                ),
-                fields=("scheduled_datetime")
-            )
+            serialized_prev_delta=old_data,
+            serialized_post_delta=new_data,
         )
-        cur_list.scheduled_datetime = data["scheduled_datetime"]
+
         messages.success(self.request, "Список успешно изменён")
         return super().form_valid(form)
 
@@ -179,12 +196,23 @@ class MovementListHistoryView(FacilityListMixin, ListView):
         for obj in queryset:
             deserialized_data = []
             for deserialized_object in serializers.deserialize(
-                "xml", obj.serialized_model_delta
+                "xml",
+                obj.serialized_prev_delta
+            ):
+                deserialized_data.append(deserialized_object.object)
+
+            for deserialized_object in serializers.deserialize(
+                "xml",
+                obj.serialized_post_delta
             ):
                 deserialized_data.append(deserialized_object.object)
 
             data.append(
-                {"obj": obj, "deserialized_data": deserialized_data[0]}
+                {
+                    "entry": obj,
+                    "prev_change": deserialized_data[0],
+                    "post_change": deserialized_data[1],
+                }
             )
 
         return data
