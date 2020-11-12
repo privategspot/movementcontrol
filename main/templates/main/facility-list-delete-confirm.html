@@ -1,0 +1,30 @@
+{% extends "../base/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block meta_title %}
+Подтверждение удаления
+{% endblock meta_title %}
+
+{% block main_content %}
+<div class="container-lg">
+  <div class="row justify-content-center">
+    <div class="col-md-6 d-flex justify-content-center">
+      <div class="card mt-4">
+        <div class="card-body">
+          <h2 class="card-title h5">Подтверждение удаления</h5>
+          <p class="card-text">
+          Вы уверены, что хотите удалить эту запись?
+          </p>
+          <form action="{% url 'facility-entries-list-delete' facility_slug=related_facility.slug list_id=related_list.pk %}" method="POST">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <a href="{% url 'facility-lists' facility_slug=related_facility.slug %}" class="btn btn-secondary mr-4">Вернуться назад</a>
+            <button type="submit" class="btn btn-danger">Подтвердить</button>
+          </form>
+        </div>  
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock main_content %}

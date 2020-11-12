@@ -2,7 +2,7 @@ from django.views.generic.list import ListView
 from django.views.generic.base import RedirectView
 from django.views.generic.edit import FormView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import UpdateView
+from django.views.generic.edit import UpdateView, DeleteView
 from django.urls import reverse
 from django.utils import timezone
 from django.core import serializers
@@ -100,6 +100,25 @@ class AddMovementList(FacilityMixin, FormView):
             creator=self.request.user,
         )
         return super().form_valid(form)
+
+
+class DeleteMovementList(FacilityListMixin, DeleteView):
+
+    model = MovementList
+    template_name = "main/facility-list-delete-confirm.html"
+    pk_url_kwarg = "list_id"
+
+    def get_success_url(self):
+        return reverse('facility-lists', args=[self.related_facility.slug])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["DEBUG"] = DEBUG
+        context["header"] = self.related_facility.name
+        context["related_facility"] = self.related_facility
+        context["facilities"] = self.all_facilities
+        context["related_list"] = self.related_list
+        return context
 
 
 class EditMovementList(FacilityListMixin, UpdateView):

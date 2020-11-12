@@ -41,18 +41,28 @@
                     Создан {{ movement_list.creation_datetime }} пользователем {{ movement_list.creator.full_name }}
                   </p>
                 </div>
-                <div class="d-flex align-items-center ml-auto">
-                  <a href="{% url 'facility-entries-list-edit' facility_slug=related_facility.slug list_id=movement_list.pk %}" class="mr-4">
+                <div class="d-flex align-items-center ml-auto btn-group" role="group" aria-label="Управление списком">
+                  <a 
+                    href="{% url 'facility-entries-list-delete' facility_slug=related_facility.slug list_id=movement_list.pk %}"
+                    class="btn btn-outline-danger"
+                    aria-label="Удалить"
+                  >
+                    <i class="fas fa-trash-alt"></i>
+                  </a>
+                  <a 
+                    href="{% url 'facility-entries-list-edit' facility_slug=related_facility.slug list_id=movement_list.pk %}" 
+                    class="btn btn-outline-secondary"
+                    aria-label="Изменить"
+                  >
                     <i class="fas fa-edit"></i>
                   </a>
-                  {% if movement_list.was_changed %}
                   <a 
                     href="{% url 'facility-entries-list-history' facility_slug=related_facility.slug list_id=movement_list.pk %}" 
-                    class="btn btn-outline-info mr-2"
+                    class="btn btn-outline-info"
+                    aria-label="История"
                   >
-                    История
+                    <i class="fas fa-history"></i>
                   </a>
-                  {% endif %}
                   <a href="{{ movement_list.get_absolute_url }}" class="btn btn-outline-primary">Перейти</a>
                 </div>
               </div>

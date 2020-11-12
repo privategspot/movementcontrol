@@ -4,7 +4,8 @@ from django.contrib.auth.decorators import login_required
 
 from .views import DefaultRedirect, FacilityMovementEntriesList,\
     FacilityAddMovementEntry, FacilityMovementEntry, FacilityLists, \
-    AddMovementList, EditMovementList, MovementListHistoryView
+    AddMovementList, EditMovementList, MovementListHistoryView,\
+    DeleteMovementList
 
 
 accounts_urls = [
@@ -42,6 +43,11 @@ urlpatterns = [
         "facility/<slug:facility_slug>/list/<int:list_id>/edit/",
         login_required(EditMovementList.as_view()),
         name="facility-entries-list-edit",
+    ),
+    path(
+        "facility/<slug:facility_slug>/list/<int:list_id>/delete/",
+        login_required(DeleteMovementList.as_view()),
+        name="facility-entries-list-delete",
     ),
     path(
         "facility/<slug:facility_slug>/list/<int:list_id>/history/",
