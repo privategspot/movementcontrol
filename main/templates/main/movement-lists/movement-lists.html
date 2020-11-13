@@ -1,4 +1,4 @@
-{% extends "../base/base.html" %}
+{% extends "../../base/base.html" %}
 
 {% block meta_title %}
 {{ related_facility.name }} | Списки
@@ -13,7 +13,7 @@
           <a class="nav-link active" href="{{ related_facility.get_absolute_url }}">Списки</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'facility-lists-add' facility_slug=related_facility.slug %}">
+          <a class="nav-link" href="{% url 'movement-lists-add' facility_slug=related_facility.slug %}">
           Добавить список
           <i class="fas fa-plus-circle"></i>
           </a>
@@ -56,21 +56,21 @@
                 </div>
                 <div class="d-flex align-items-center ml-auto btn-group" role="group" aria-label="Управление списком">
                   <a 
-                    href="{% url 'facility-entries-list-delete' facility_slug=related_facility.slug list_id=movement_list.pk %}"
+                    href="{% url 'movement-list-delete' facility_slug=related_facility.slug list_id=movement_list.pk %}"
                     class="btn btn-outline-danger"
                     aria-label="Удалить"
                   >
                     <i class="fas fa-trash-alt"></i>
                   </a>
                   <a 
-                    href="{% url 'facility-entries-list-edit' facility_slug=related_facility.slug list_id=movement_list.pk %}" 
+                    href="{% url 'movement-list-edit' facility_slug=related_facility.slug list_id=movement_list.pk %}" 
                     class="btn btn-outline-secondary"
                     aria-label="Изменить"
                   >
                     <i class="fas fa-edit"></i>
                   </a>
                   <a 
-                    href="{% url 'facility-entries-list-history' facility_slug=related_facility.slug list_id=movement_list.pk %}" 
+                    href="{% url 'movement-list-history' facility_slug=related_facility.slug list_id=movement_list.pk %}" 
                     class="btn btn-outline-info"
                     aria-label="История"
                   >
@@ -92,7 +92,7 @@
   {% if paginator.num_pages > 1 %}
   <footer class="row mt-4">
     <div class="col">
-      {% include "../includes/paginator.html" %}
+      {% include "../../includes/paginator.html" %}
     </div>
   </footer>
   {% endif %}

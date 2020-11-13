@@ -18,7 +18,7 @@ class FacilityObject(models.Model):
     )
 
     def get_absolute_url(self):
-        return reverse("facility-lists", kwargs={
+        return reverse("movement-lists", kwargs={
             "facility_slug": self.slug,
         })
 
@@ -159,7 +159,7 @@ class MovementList(models.Model):
         return True if self.creation_datetime != self.last_modified else False
 
     def get_absolute_url(self):
-        return reverse("facility-entries-list", kwargs={
+        return reverse("movement-list-entries", kwargs={
             "facility_slug": self.facility.slug,
             "list_id": self.pk,
         })
@@ -221,16 +221,6 @@ class MovementEntry(models.Model):
         Возвращает True, если запись была изменена, иначе False
         """
         return True if self.creation_datetime != self.last_modified else False
-
-    def get_absolute_url(self):
-        """
-        Возвращает url записи
-        """
-        return reverse("movement-entry", kwargs={
-            "facility_slug": self.movement_list.facility.slug,
-            "list_id": self.movement_list.pk,
-            "pk": self.pk,
-        })
 
     def __str__(self):
         datetime = self.scheduled_datetime

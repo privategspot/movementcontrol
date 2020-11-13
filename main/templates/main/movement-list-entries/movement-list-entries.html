@@ -1,4 +1,4 @@
-{% extends "../base/base.html" %}
+{% extends "../../base/base.html" %}
 
 {% comment %} 
 Шаблон для отображения списка записей о заездах/отъездах сотрудников
@@ -30,7 +30,7 @@
           <a class="nav-link active" href="{{ related_facility.get_absolute_url }}">Записи</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'facility-add-entry' facility_slug=related_facility.slug list_id=related_list.pk %}">
+          <a class="nav-link" href="{% url 'movement-list-entries-add' facility_slug=related_facility.slug list_id=related_list.pk %}">
           Добавить запись
           <i class="fas fa-plus-circle"></i>
           </a>
@@ -64,11 +64,28 @@
                     Создана {{ entry.creation_datetime }} пользователем {{ entry.creator.full_name }}
                   </p>
                 </div>
-                <div class="d-flex align-items-center ml-auto">
-                  <a href="#" class="mr-4">
+                <div class="d-flex align-items-center ml-auto btn-group" role="group" aria-label="Управление списком">
+                  <a 
+                    href="{% url 'movement-list-entry-delete' facility_slug=related_facility.slug list_id=related_list.pk entry_id=entry.pk %}"
+                    class="btn btn-outline-danger"
+                    aria-label="Удалить"
+                  >
+                    <i class="fas fa-trash-alt"></i>
+                  </a>
+                  <a 
+                    href="{% url 'movement-list-entry-edit' facility_slug=related_facility.slug list_id=related_list.pk entry_id=entry.pk %}" 
+                    class="btn btn-outline-secondary"
+                    aria-label="Изменить"
+                  >
                     <i class="fas fa-edit"></i>
                   </a>
-                  <a href="{{ entry.get_absolute_url }}" class="btn btn-outline-primary ml-auto">Перейти</a>
+                  <a 
+                    href="{% url 'movement-list-entry-history' facility_slug=related_facility.slug list_id=related_list.pk entry_id=entry.pk %}" 
+                    class="btn btn-outline-info"
+                    aria-label="История"
+                  >
+                    <i class="fas fa-history"></i>
+                  </a>
                 </div>
               </div>
             </div>
@@ -85,19 +102,13 @@
   {% if paginator.num_pages and paginator.num_pages > 1 %}
   <footer class="row mt-4">
     <div class="col">
-      <nav>
-        <ul class="pagination justify-content-center">
-          {% for p in paginator.page_range %}
-            {% if p == page_obj.number %}
-              <li class="page-item active">
-            {% else %}
-              <li class="page-item">
-            {% endif %}
-                <a class="page-link" href="{{ paginator.baseurl }}{{ p }}">{{ p }}</a>
-              </li>
-          {% endfor %}
-        </ul>
-      </nav>
+      {% if paginator.num_pages > 1 %}
+      <footer class="row mt-4">
+        <div class="col">
+          {% include "../../includes/paginator.html" %}
+        </div>
+      </footer>
+      {% endif %}
     </div>
   </footer>
   {% endif %}

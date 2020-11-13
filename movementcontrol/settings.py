@@ -31,8 +31,8 @@ INTERNAL_IPS = ["127.0.0.1"]
 
 # Auth settings
 AUTH_USER_MODEL = 'main.User'
-LOGIN_REDIRECT_URL = "redirect-to-default-facility-list"
-LOGOUT_REDIRECT_URL = "redirect-to-default-facility-list"
+LOGIN_REDIRECT_URL = "redirect-to-default-facility"
+LOGOUT_REDIRECT_URL = "redirect-to-default-facility"
 
 # Application definition
 

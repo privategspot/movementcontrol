@@ -1,4 +1,4 @@
-{% extends "../base/base.html" %}
+{% extends "../../base/base.html" %}
 
 {% block meta_title %}
 Добавление записи
@@ -14,7 +14,7 @@
           <a class="nav-link" href="{{ related_list.get_absolute_url }}">Записи</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" href="{% url 'facility-add-entry' facility_slug=related_facility.slug list_id=related_list.pk %}">
+          <a class="nav-link active" href="{% url 'movement-list-entries-add' facility_slug=related_facility.slug list_id=related_list.pk %}">
           Добавить запись
           <i class="fas fa-plus-circle"></i>
           </a>
@@ -32,9 +32,9 @@
   <div class="row mt-2">
     <div class="col-md">
       <div class="card mt-4">
-        {% url 'facility-add-entry' facility_slug=related_facility.slug list_id=related_list.pk as action %}
+        {% url 'movement-list-entries-add' facility_slug=related_facility.slug list_id=related_list.pk as action %}
         {% with title="Добавление записи" action=action method="POST" form=form button_value="Создать" %}
-        {% include "../includes/crispy-form.html" %}
+        {% include "../../includes/crispy-form.html" %}
         {% endwith %}
       </div>
     </div>
