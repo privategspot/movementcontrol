@@ -1,7 +1,7 @@
 from django import forms
 from django.utils import timezone
 
-from .models import MovementList
+from .models import MovementList, Employee
 
 
 class CreateMovementListForm(forms.ModelForm):
@@ -74,3 +74,10 @@ class CreateMovementEntryForm(forms.Form):
         "patronymic",
         "position",
     ]
+
+
+class EditMovementEntryForm(forms.ModelForm):
+
+    class Meta:
+        model = Employee
+        fields = "__all__"

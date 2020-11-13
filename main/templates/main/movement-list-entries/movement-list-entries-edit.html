@@ -1,0 +1,29 @@
+{% extends "../../base/base.html" %}
+
+{% block meta_title %}
+Редактирование записи
+{% endblock meta_title %}
+
+{% block main_content %}
+<div class="container-lg">
+  <div class="row">
+    <div class="col-md">
+      <h2 class="h3 mb-4">Список {{ related_list.list_type_humanize }}ов на {{ related_list.scheduled_datetime|date:"d E Y" }}</h2>
+      <ul class="nav nav-pills">
+        <li class="nav-item ml-auto">
+          <a href="{{ related_list.get_absolute_url }}" class="nav-link btn btn-outline-primary">
+          <i class="fas fa-chevron-left pr-1"></i>
+          Назад
+          </a>
+        </li>
+      </ul>
+      <div class="card mt-4">
+        {% url 'movement-list-entry-edit' facility_slug=related_facility.slug list_id=related_list.pk entry_id=entry_id as action %}
+        {% with title="Редактирование записи" action=action method="POST" form=form button_value="Подтвердить" %}
+        {% include "../../includes/crispy-form.html" %}
+        {% endwith %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock main_content %}
