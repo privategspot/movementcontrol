@@ -80,7 +80,29 @@ class MovementListEntryEdit(FacilityListMixin, UpdateView):
 
 
 class MovementListEntryDelete(FacilityListMixin, DeleteView):
-    pass
+
+    model = MovementEntry
+    pk_url_kwarg = "entry_id"
+    template_name = "main/movement-list-entries/movement-list-entries-delete.html"
+
+    def get_success_url(self):
+        return reverse("movement-list-entries", args=[
+            self.related_facility.slug,
+            self.related_list.pk,
+        ])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["header"] = self.related_facility.name
+        context["related_facility"] = self.related_facility
+        context["facilities"] = self.all_facilities
+        context["related_list"] = self.related_list
+        context["entry_id"] = self.kwargs["entry_id"]
+        return context
+
+    def post(self, request, *args, **kwargs):
+        messages.success(self.request, "Запись успешно удалена")
+        return super().post(request, *args, **kwargs)
 
 
 class MovementListEntryHistory(FacilityListMixin, ListView):
