@@ -1,5 +1,4 @@
 from django.contrib import messages
-from django.core import serializers
 from django.utils import timezone
 from django.urls import reverse
 from django.views.generic.list import ListView
@@ -122,18 +121,13 @@ class MovementListEntryEdit(FacilityListMixin, UpdateView):
         return context
 
     def form_valid(self, form):
-        xml_serializer = serializers.get_serializer("xml")()
         data = form.cleaned_data
-        queryset_with_cur_entry = self.get_queryset_with_object()
+        cur_employee = self.get_object().employee
 
         # Сериализируем данные до внесения изменения
-        old_data = xml_serializer.serialize(
-            queryset_with_cur_entry,
-            fields=("employee")
-        )
+        old_data = cur_employee.toJSON()
 
         # вносим изменения
-        cur_employee = queryset_with_cur_entry.get().employee
         cur_employee.first_name = data["first_name"]
         cur_employee.last_name = data["last_name"]
         cur_employee.patronymic = data["patronymic"]
@@ -141,10 +135,7 @@ class MovementListEntryEdit(FacilityListMixin, UpdateView):
         cur_employee.save()
 
         # Сериализируем данные после внесения изменения
-        new_data = xml_serializer.serialize(
-            queryset_with_cur_entry,
-            fields=("employee")
-        )
+        new_data = cur_employee.toJSON()
 
         # добавляем запись в историю
         MovementEntryHistory.objects.create(
@@ -186,4 +177,32 @@ class MovementListEntryDelete(FacilityListMixin, DeleteView):
 
 
 class MovementListEntryHistory(FacilityListMixin, ListView):
-    pass
+
+    template_name = "main/movement-list-entries/movement-list-entry-history.html"
+    context_object_name = "history_entries"
+
+    def get_queryset(self):
+        entry = self.related_list.movemententry_set.get(
+            pk=self.kwargs["entry_id"]
+        )
+        queryset = entry.movemententryhistory_set.all()
+        queryset = queryset.order_by("-pk")
+        data = []
+
+        for obj in queryset:
+            data.append(
+                {
+                    "meta": obj,
+                    **obj.get_change_states(),
+                }
+            )
+
+        return data
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["header"] = self.related_facility.name
+        context["related_facility"] = self.related_facility
+        context["facilities"] = self.all_facilities
+        context["related_list"] = self.related_list
+        return context

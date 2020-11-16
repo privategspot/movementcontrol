@@ -1,0 +1,77 @@
+{% extends "../../base/base.html" %}
+
+{% block meta_title %}
+История изменений
+{% endblock meta_title %}
+
+{% block main_content %}
+<div class="container-lg">
+  <div class="row">
+    <div class="col-md">
+      <h2 class="h3">
+        Список {{ related_list.list_type_humanize }}ов на {{ related_list.scheduled_datetime|date:"d E Y" }}
+      </h2>
+      <h3 class="h4 font-weight-mb-4 card-title">История изменений</h3>
+      <ul class="nav nav-pills">
+        <li class="nav-item ml-auto">
+          <a href="{{ related_list.get_absolute_url }}" class="nav-link btn btn-outline-primary">
+          <i class="fas fa-chevron-left pr-1"></i>
+          Назад
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md">
+      <div class="mt-4">
+        {% if history_entries %}
+        <ul class="list-unstyled">
+          {% for entry in history_entries %}
+          <li class="card shadow-sm mt-2">
+            <div class="card-body">
+              <h3 class="card-title h4">Изменения от {{ entry.meta.modified_datetime }}</h3>
+              <p class="card-text">Внесены пользователем {{ entry.meta.modified_by.full_name }}</p>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Поле</th>
+                    <th scope="col">До изменений</th>
+                    <th scope="col">После изменений</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">Имя</th>
+                    <td>{{ entry.prev_state.first_name }}</td>
+                    <td>{{ entry.post_state.first_name }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Фамилия</th>
+                    <td>{{ entry.prev_state.last_name }}</td>
+                    <td>{{ entry.post_state.last_name }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Отчество</th>
+                    <td>{{ entry.prev_state.patronymic }}</td>
+                    <td>{{ entry.post_state.patronymic }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Позиция</th>
+                    <td>{{ entry.prev_state.position }}</td>
+                    <td>{{ entry.post_state.position }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <h3 class="h5 card-title">Нет изменений</h2>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock main_content %}

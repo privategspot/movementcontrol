@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.core import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 
@@ -57,6 +58,9 @@ class AbstractPerson(models.Model):
 
 
 class Employee(AbstractPerson):
+
+    def toJSON(self):
+        return serializers.serialize("json", [self])
 
     class Meta:
         verbose_name = "Сотрудник"
@@ -246,6 +250,19 @@ class MovementEntryHistory(HistoryMixin):
         MovementEntry,
         on_delete=models.CASCADE
     )
+
+    def get_change_states(self):
+        prev_state = next(
+            serializers.deserialize("json", self.serialized_prev_delta)
+        ).object
+        post_state = next(
+            serializers.deserialize("json", self.serialized_post_delta)
+        ).object
+        states = {
+            "prev_state": prev_state,
+            "post_state": post_state,
+        }
+        return states
 
     class Meta:
         verbose_name = "Состояние записи"
