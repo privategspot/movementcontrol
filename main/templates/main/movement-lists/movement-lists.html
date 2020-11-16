@@ -5,25 +5,43 @@
 {% endblock meta_title %}
 
 {% block main_content %}
-<div class="container-lg">
-  <header class="row">
-    <div class="col-md">
-      <ul class="nav nav-pills">
-        <li class="nav-item">
-          <a class="nav-link active" href="{{ related_facility.get_absolute_url }}">Списки</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'movement-lists-add' facility_slug=related_facility.slug %}">
-          Добавить список
-          <i class="fas fa-plus-circle"></i>
-          </a>
-        </li>
-      </ul>
-    </div>
+<section class="container-lg">
+  <header>
+    <nav class="row">
+      <div class="col-md">
+        <ul class="nav nav-pills">
+          <li class="nav-item">
+            <a class="nav-link active" href="{{ related_facility.get_absolute_url }}">Списки</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'movement-lists-add' facility_slug=related_facility.slug %}">
+            Добавить список
+            <i class="fas fa-plus-circle"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
   </header>
 
+  <div class="row">
+    <div class="col-md dropdown show d-flex align-items-center mt-4">
+      <span class="mr-2">Показывать</span>
+      <div>
+        <a class="btn btn-outline-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {{show}}
+        </a>
 
-  <div class="row mt-4">
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+          <a class="dropdown-item" href="{{ request.path }}">все</a>
+          <a class="dropdown-item" href="{{ request.path }}?show=arrivals">только заезды</a>
+          <a class="dropdown-item" href="{{ request.path }}?show=departures">только отъезды</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-2">
     <div class="col-md">
       {% if messages %}
       <ul class="list-unstyled">
@@ -96,5 +114,5 @@
     </div>
   </footer>
   {% endif %}
-</div>
+</section>
 {% endblock main_content %}

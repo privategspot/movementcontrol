@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.urls import reverse
+from django.http.request import QueryDict
 from django.core import serializers
 from django.utils import timezone
 from django.views.generic.list import ListView
@@ -19,20 +20,52 @@ class MovementLists(FacilityMixin, ListView):
     paginate_by = 10
     paginate_orphans = 0
     context_object_name = "movement_lists"
+    http_method_names = ["get", "head"]
 
     @property
     def queryset(self):
-        return self.related_facility.movementlist_set.all()
+        get_params = self.request.GET
+        movement_lists = self.related_facility.movementlist_set.all()
+        show = get_params.get("show", "")
+        if show == "arrivals":
+            return movement_lists.filter(list_type="ARR")
+        elif show == "departures":
+            return movement_lists.filter(list_type="LVN")
+        return movement_lists
+
+    def get_paginator_baseurl(self):
+        query = ""
+        cur_get = self.request.GET.copy()
+        cur_get_len = len(cur_get.dict())
+        if not cur_get:
+            query = "?page="
+        elif cur_get_len == 1 and "page" in cur_get:
+            query = "?page="
+        elif cur_get_len > 1 and "page" in cur_get:
+            cur_get.pop("page")
+            cur_get = QueryDict(cur_get.urlencode())
+            query = "?" + cur_get.urlencode() + "&page="
+        elif cur_get_len >= 1:
+            cur_get = QueryDict(cur_get.urlencode())
+            query = "?" + cur_get.urlencode() + "&page="
+        return self.request.path + query
+
+    def get_show_message(self):
+        cur_get = self.request.GET
+        if "show" not in cur_get:
+            return "все"
+        elif cur_get["show"] == "arrivals":
+            return "только заезды"
+        elif cur_get["show"] == "departures":
+            return "только отъезды"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["header"] = self.related_facility.name
         context["related_facility"] = self.related_facility
         context["facilities"] = self.all_facilities
-        context["paginator"].baseurl = reverse(
-            "movement-lists",
-            args=[context["related_facility"].slug]
-        ) + "?page="
+        context["paginator"].baseurl = self.get_paginator_baseurl()
+        context["show"] = self.get_show_message()
         return context
 
 
