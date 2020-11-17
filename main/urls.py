@@ -7,7 +7,7 @@ from .views.movement_lists import MovementLists, MovementListsAdd,\
     MovementListEdit, MovementListDelete, MovementListHistory
 from .views.movement_list_entries import MovementListEntries,\
     MovementListEntriesAdd, MovementListEntryEdit, MovementListEntryDelete,\
-    MovementListEntryHistory
+    MovementListEntryHistory, movement_list_entries_PDF
 
 
 accounts_urls = [
@@ -24,6 +24,11 @@ movement_list_entries_urlpatterns = [
         "entries/",
         MovementListEntries.as_view(),
         name="movement-list-entries",
+    ),
+    path(
+        "entries/print/",
+        movement_list_entries_PDF,
+        name="movement-list-entries-print",
     ),
     path(
         "entries/add/",

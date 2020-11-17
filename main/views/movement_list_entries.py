@@ -1,12 +1,21 @@
+import pdfkit
+import pytz
+
+from django.conf import settings
 from django.contrib import messages
 from django.utils import timezone
 from django.urls import reverse
 from django.views.generic.list import ListView
 from django.views.generic.edit import FormView
 from django.views.generic.edit import UpdateView, DeleteView
+from django.template.loader import get_template
+from django.views.decorators.http import require_safe
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 
 from .mixins import FacilityListMixin
-from ..models import Employee, MovementEntry, MovementEntryHistory
+from ..models import FacilityObject, MovementList, Employee, MovementEntry,\
+    MovementEntryHistory
 from ..forms import CreateMovementEntryForm, EditMovementEntryForm
 
 
@@ -36,6 +45,37 @@ class MovementListEntries(FacilityListMixin, ListView):
             ]
         ) + "?page="
         return context
+
+
+@require_safe
+def movement_list_entries_PDF(request, **kwargs):
+
+    related_facility = get_object_or_404(
+        FacilityObject, slug=kwargs["facility_slug"]
+    )
+    related_list = get_object_or_404(
+        MovementList, pk=kwargs["list_id"]
+    )
+
+    context = dict()
+    context["header"] = related_facility.name
+    context["related_facility"] = related_facility
+    context["related_list"] = related_list
+    context["entries"] = related_list.movemententry_set.all()
+
+    template = get_template(
+        "main/movement-list-entries/movement-list-entries-print.html"
+    )
+    html = template.render(context)
+    pdf = pdfkit.from_string(html, False)
+    settings_tz = pytz.timezone(settings.TIME_ZONE)
+    scheduled_date = related_list.scheduled_datetime.astimezone(settings_tz)
+    filename = context["related_facility"].slug + "-" +\
+        scheduled_date.strftime("%d-%b-%Y") + ".pdf"
+
+    response = HttpResponse(pdf, content_type="application/pdf")
+    response["Content-Disposition"] = 'attachment; filename="' + filename + '"'
+    return response
 
 
 class MovementListEntriesAdd(FacilityListMixin, FormView):

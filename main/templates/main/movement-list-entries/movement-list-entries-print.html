@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Список {{ related_list.list_type_humanize }}ов</title>
+  <style>
+  table {
+    width: 100%;
+  }
+
+  th, td {
+    padding: 4px 8px;
+  }
+
+  table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+  </style>
+</head>
+<body>
+  <h1>{{ header }}</h1>
+  <h2>Список {{ related_list.list_type_humanize }}ов на {{ related_list.scheduled_datetime|date }}</h2>
+  <table>
+    <tr>
+      <th>Индекс</th>
+      <th>ФИО</th>
+      <th>Должность</th>
+    </tr>
+    {% for entry in entries %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td>{{ entry.employee.full_name }}</td>
+      <td>{{ entry.employee.position }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</body>
+</html>

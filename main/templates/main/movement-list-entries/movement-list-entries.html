@@ -12,7 +12,16 @@
 <div class="container-lg">
   <div class="row">
     <div class="col-md">
-      <h2 class="h3 mb-4">Список {{ related_list.list_type_humanize }}ов на {{ related_list.scheduled_datetime|date:"d E Y" }}</h2>
+      <h2 class="h3 mb-4">
+      <span class="mr-2">Список {{ related_list.list_type_humanize }}ов на {{ related_list.scheduled_datetime|date:"d E Y" }}</span>
+      <a
+        class="btn btn-primary"
+        href="{% url 'movement-list-entries-print' facility_slug=related_facility.slug list_id=related_list.pk %}"
+        aria-label="Печать"
+      >
+        <i class="fas fa-print"></i>
+      </a>
+      </h2>
       {% if messages %}
       <ul class="list-unstyled">
         {% for message in messages %}
