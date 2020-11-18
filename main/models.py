@@ -174,6 +174,16 @@ class MovementList(models.Model):
             self.scheduled_datetime,
         )
 
+    class Meta:
+
+        verbose_name = "Список заездов/отъездов"
+        verbose_name_plural = "Списки заездов/отъездов"
+
+        permissions = [
+            ("change_owned_movementlist", "Право изменения списка созданного пользователем"),
+            ("delete_owned_movementlist", "Право удаления списка созданного пользователем"),
+        ]
+
 
 class MovementListHistory(HistoryMixin):
 
@@ -237,8 +247,14 @@ class MovementEntry(models.Model):
         )
 
     class Meta:
+
         verbose_name = "Запись о заезде/отъезде"
         verbose_name_plural = "Записи о заездах/отъездах"
+
+        permissions = [
+            ("change_owned_movementlistentry", "Право изменения записи созданной пользователем"),
+            ("delete_owned_movementlistentry", "Право удаления записи созданной пользователем"),
+        ]
 
 
 class MovementEntryHistory(HistoryMixin):
