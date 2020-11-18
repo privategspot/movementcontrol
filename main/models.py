@@ -162,11 +162,26 @@ class MovementList(models.Model):
         """
         return True if self.creation_datetime != self.last_modified else False
 
-    def get_absolute_url(self):
-        return reverse("movement-list-entries", kwargs={
+    def get_url_kwargs(self):
+        return {
             "facility_slug": self.facility.slug,
             "list_id": self.pk,
-        })
+        }
+
+    def get_absolute_url(self):
+        return reverse("movement-list-entries", kwargs=self.get_url_kwargs())
+
+    def get_add_url(self):
+        return reverse("movement-lists-add", kwargs=self.get_url_kwargs())
+
+    def get_delete_url(self):
+        return reverse("movement-list-delete", kwargs=self.get_url_kwargs())
+
+    def get_edit_url(self):
+        return reverse("movement-list-edit", kwargs=self.get_url_kwargs())
+
+    def get_history_url(self):
+        return reverse("movement-list-history", kwargs=self.get_url_kwargs())
 
     def __str__(self):
         return "Список %sов на %s" % (
@@ -235,6 +250,25 @@ class MovementEntry(models.Model):
         Возвращает True, если запись была изменена, иначе False
         """
         return True if self.creation_datetime != self.last_modified else False
+
+    def get_url_kwargs(self):
+        return {
+            "facility_slug": self.movement_list.facility.slug,
+            "list_id": self.movement_list.pk,
+            "entry_id": self.pk,
+        }
+
+    def get_add_url(self):
+        return reverse("movement-list-entry-add", kwargs=self.get_url_kwargs())
+
+    def get_delete_url(self):
+        return reverse("movement-list-entry-delete", kwargs=self.get_url_kwargs())
+
+    def get_edit_url(self):
+        return reverse("movement-list-entry-edit", kwargs=self.get_url_kwargs())
+
+    def get_history_url(self):
+        return reverse("movement-list-entry-history", kwargs=self.get_url_kwargs())
 
     def __str__(self):
         datetime = self.scheduled_datetime
