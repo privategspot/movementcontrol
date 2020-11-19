@@ -13,11 +13,13 @@ from django.views.decorators.http import require_safe
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.db.models import Q
 
 from .mixins import FacilityListMixin
 from ..models import FacilityObject, MovementList, Employee, MovementEntry,\
     MovementEntryHistory
-from ..forms import CreateMovementEntryForm, EditMovementEntryForm
+from ..forms import CreateMovementEntryForm, EditMovementEntryForm,\
+    SearchEntryForm
 
 
 class MovementListEntries(FacilityListMixin, ListView):
@@ -29,6 +31,23 @@ class MovementListEntries(FacilityListMixin, ListView):
 
     def get_queryset(self):
         entries = self.related_list.movemententry_set.all().order_by("-pk")
+        search_request = self.request.GET.get("search_request", False)
+        if search_request:
+            search_request = search_request.strip().split()
+            predicat = self.request.GET.get("predicat")
+            for term in search_request:
+                if predicat == "USERS":
+                    entries = entries.filter(
+                        Q(creator__first_name__icontains=term) |
+                        Q(creator__last_name__icontains=term) |
+                        Q(creator__patronymic__icontains=term)
+                    )
+                elif predicat == "EMPLOYEES":
+                    entries = entries.filter(
+                        Q(employee__first_name__icontains=term) |
+                        Q(employee__last_name__icontains=term) |
+                        Q(employee__patronymic__icontains=term)
+                    )
         user = self.request.user
         out = []
         for entry in entries:
@@ -56,6 +75,8 @@ class MovementListEntries(FacilityListMixin, ListView):
                 context["related_list"].pk,
             ]
         ) + "?page="
+        search_action = self.related_list.get_absolute_url()
+        context["search_form"] = SearchEntryForm(search_action)
         return context
 
 

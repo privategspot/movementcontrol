@@ -1,5 +1,7 @@
 {% extends "../../base/base.html" %}
 
+{% load crispy_forms_tags %}
+
 {% comment %} 
 Шаблон для отображения списка записей о заездах/отъездах сотрудников
 {% endcomment %}
@@ -36,13 +38,21 @@
       {% endif %}
       <ul class="nav nav-pills">
         <li class="nav-item">
-          <a class="nav-link active" href="{{ related_facility.get_absolute_url }}">Записи</a>
+          <a class="nav-link active" href="{{ related_list.get_absolute_url }}">Записи</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{% url 'movement-list-entries-add' facility_slug=related_facility.slug list_id=related_list.pk %}">
           Добавить запись
           <i class="fas fa-plus-circle"></i>
           </a>
+        </li>
+        <li class="nav-item">
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            data-toggle="modal"
+            data-target="#searchModal"
+          >Поиск</button>
         </li>
         <li class="nav-item ml-auto">
           {% include "../../includes/backbtn.html" %}
@@ -99,4 +109,21 @@
   </footer>
   {% endif %}
 </div>
+
+<div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Поиск по записям</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true"><i class="fas fa-times"></i></span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {% crispy search_form search_form.helper %}
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock main_content %}

@@ -2,8 +2,10 @@ from django import forms
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
 
-from .models import MovementList, Employee
+from .models import MovementList, Employee, MovementEntry
 from .widgets import ListTextWidget
 
 
@@ -119,3 +121,26 @@ class EditMovementEntryForm(forms.ModelForm):
     class Meta:
         model = Employee
         fields = "__all__"
+
+
+class SearchEntryForm(forms.Form):
+
+    def __init__(self, action, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.disable_csrf = True
+        self.helper.form_method = "GET"
+        self.helper.form_action = action
+        self.helper.add_input(Submit("submit", "Найти"))
+
+    PREDICATS = [
+        ("USERS", "ФИО пользователей"),
+        ("EMPLOYEES", "ФИО сотрудников"),
+    ]
+
+    search_request = forms.CharField(label="Запрос")
+    predicat = forms.ChoiceField(
+        label="Искать среди",
+        widget=forms.Select(),
+        choices=PREDICATS,
+    )
