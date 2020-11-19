@@ -11,10 +11,7 @@
       <h2 class="h3 mb-4">Список {{ related_list.list_type_humanize }}ов на {{ related_list.scheduled_datetime|date:"d E Y" }}</h2>
       <ul class="nav nav-pills">
         <li class="nav-item ml-auto">
-          <a href="{{ related_facility.get_absolute_url }}" class="nav-link btn btn-outline-primary">
-          <i class="fas fa-chevron-left pr-1"></i>
-          Назад
-          </a>
+          {% include "../../includes/backbtn.html" %}
         </li>
       </ul>
       <div class="card mt-4">

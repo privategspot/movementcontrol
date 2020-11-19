@@ -20,7 +20,7 @@
             {% csrf_token %}
             {{ form|crispy }}
             <div class="d-flex">
-              <a href="{% url 'movement-list-entries' facility_slug=related_facility.slug list_id=related_list.pk %}" class="btn btn-secondary">Назад</a>
+              {% include "../../includes/backbtn.html" %}
               <button type="submit" class="btn btn-danger ml-auto">Подтвердить</button>
             </div>
           </form>
