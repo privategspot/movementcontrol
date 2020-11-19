@@ -223,11 +223,21 @@ class MovementListHistory(HistoryMixin):
         verbose_name_plural = "Состояния списков"
 
 
+class MovementEntryManager(models.Manager):
+
+    def get_autocomplete_suggestions(self, field):
+        entries = super().all().distinct()
+        values = entries.values_list("employee__" + field, flat=True)
+        return values
+
+
 class MovementEntry(models.Model):
     """
     Запись содержащая информацию о заезде/отъезде
     сотрудников на производственный объект
     """
+
+    objects = MovementEntryManager()
 
     movement_list = models.ForeignKey(
         MovementList,

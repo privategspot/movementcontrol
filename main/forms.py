@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 from .models import MovementList, Employee
+from .widgets import ListTextWidget
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -57,24 +58,22 @@ class EditMovementListForm(forms.ModelForm):
 
 
 class CreateMovementEntryForm(forms.Form):
+
     first_name = forms.CharField(
         min_length=2,
         max_length=40,
         label="Имя сотрудника",
-        widget=forms.TextInput(attrs={"placeholder": "Иван"})
     )
     last_name = forms.CharField(
         min_length=2,
         max_length=40,
         label="Фамилия сотрудника",
-        widget=forms.TextInput(attrs={"placeholder": "Иванов"})
     )
     patronymic = forms.CharField(
         min_length=2,
         max_length=40,
         label="Отчество сотрудника",
         required=False,
-        widget=forms.TextInput(attrs={"placeholder": "Иванович"})
     )
     position = forms.CharField(
         min_length=0,
@@ -88,6 +87,31 @@ class CreateMovementEntryForm(forms.Form):
         "patronymic",
         "position",
     ]
+
+    def __init__(self, *args, **kwargs):
+        _suggestions = kwargs.pop("suggestions", None)
+        super(CreateMovementEntryForm, self).__init__(*args, **kwargs)
+
+        self.fields["first_name"].widget = ListTextWidget(
+            attrs={"placeholder": "Иван", "autocomplete": "off"},
+            data_list=_suggestions.get("first_name", []),
+            name="first_name_sug"
+        )
+        self.fields["last_name"].widget = ListTextWidget(
+            attrs={"placeholder": "Иванов", "autocomplete": "off"},
+            data_list=_suggestions.get("last_name", []),
+            name="last_name_sug"
+        )
+        self.fields["patronymic"].widget = ListTextWidget(
+            attrs={"placeholder": "Иванович", "autocomplete": "off"},
+            data_list=_suggestions.get("patronymic", []),
+            name="patronymic_sug"
+        )
+        self.fields["position"].widget = ListTextWidget(
+            attrs={"autocomplete": "off"},
+            data_list=_suggestions.get("position", []),
+            name="position_sug",
+        )
 
 
 class EditMovementEntryForm(forms.ModelForm):

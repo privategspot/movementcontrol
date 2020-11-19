@@ -103,6 +103,23 @@ class MovementListEntriesAdd(UserPassesTestMixin, FacilityListMixin, FormView):
             args=[context["related_facility"].slug, self.kwargs["list_id"]]
         )
 
+    def get_suggestions_dict(self):
+        first_name_sug = MovementEntry.objects.get_autocomplete_suggestions("first_name")
+        last_name_sug = MovementEntry.objects.get_autocomplete_suggestions("last_name")
+        patronymic_sug = MovementEntry.objects.get_autocomplete_suggestions("patronymic")
+        position_sug = MovementEntry.objects.get_autocomplete_suggestions("position")
+        return {
+            "first_name": first_name_sug,
+            "last_name": last_name_sug,
+            "patronymic": patronymic_sug,
+            "position": position_sug,
+        }
+
+    def get_form_kwargs(self):
+        kwargs = super(MovementListEntriesAdd, self).get_form_kwargs()
+        kwargs["suggestions"] = self.get_suggestions_dict()
+        return kwargs
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["header"] = self.related_facility.name
