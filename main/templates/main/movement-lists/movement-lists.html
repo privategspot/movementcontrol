@@ -57,44 +57,26 @@
       {% endif %}
       {% if movement_lists %}
       <ul class="list-unstyled">
-        {% for movement_list in movement_lists %}
+        {% for mlist in movement_lists %}
         <li class="mt-2">
             <div class="card shadow-sm">
               <div class="card-body d-flex align-items-center flex-row p-3">
                 <div>
                   <h5 class="card-title">
-                    Список {{ movement_list.list_type_humanize }}ов на {{ movement_list.scheduled_datetime|date:"d E Y" }}
-                    {% if movement_list.was_changed %}
+                    Список {{ mlist.obj.list_type_humanize }}ов на {{ mlist.obj.scheduled_datetime|date:"d E Y" }}
+                    {% if mlist.obj.was_changed %}
                     <span class="badge badge-info ml-1">перенесённый</span>
                     {% endif %}
                   </h5>
                   <p class="card-text">
-                    Создан {{ movement_list.creation_datetime }} пользователем {{ movement_list.creator.full_name }}
+                    Создан {{ mlist.obj.creation_datetime }} пользователем {{ mlist.obj.creator.full_name }}
                   </p>
                 </div>
-                <div class="d-flex align-items-center ml-auto btn-group" role="group" aria-label="Управление списком">
-                  <a 
-                    href="{% url 'movement-list-delete' facility_slug=related_facility.slug list_id=movement_list.pk %}"
-                    class="btn btn-outline-danger"
-                    aria-label="Удалить"
-                  >
-                    <i class="fas fa-trash-alt"></i>
-                  </a>
-                  <a 
-                    href="{% url 'movement-list-edit' facility_slug=related_facility.slug list_id=movement_list.pk %}" 
-                    class="btn btn-outline-secondary"
-                    aria-label="Изменить"
-                  >
-                    <i class="fas fa-edit"></i>
-                  </a>
-                  <a 
-                    href="{% url 'movement-list-history' facility_slug=related_facility.slug list_id=movement_list.pk %}" 
-                    class="btn btn-outline-info"
-                    aria-label="История"
-                  >
-                    <i class="fas fa-history"></i>
-                  </a>
-                  <a href="{{ movement_list.get_absolute_url }}" class="btn btn-outline-primary">Перейти</a>
+                <div class="d-flex align-items-center ml-auto" role="group" aria-label="Управление списком">
+                  <div class="mr-2">
+                    {% include "../../includes/options.html" with obj=mlist.obj can_change=mlist.can_change can_delete=mlist.can_delete %}
+                  </div>
+                  <a href="{{ mlist.obj.get_absolute_url }}" class="btn btn-outline-primary">Перейти</a>
                 </div>
               </div>
             </div>

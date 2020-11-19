@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.views.generic.list import ListView
 from django.views.generic.edit import FormView
 from django.views.generic.edit import UpdateView, DeleteView
+from django.contrib.auth.mixins import UserPassesTestMixin
 
 from .mixins import FacilityMixin, FacilityListMixin
 from ..models import MovementList,\
@@ -16,22 +17,33 @@ from ..forms import CreateMovementListForm, EditMovementListForm
 class MovementLists(FacilityMixin, ListView):
 
     template_name = "main/movement-lists/movement-lists.html"
-    ordering = ["-pk"]
     paginate_by = 10
     paginate_orphans = 0
     context_object_name = "movement_lists"
     http_method_names = ["get", "head"]
 
-    @property
-    def queryset(self):
+    def get_queryset(self):
         get_params = self.request.GET
-        movement_lists = self.related_facility.movementlist_set.all()
+        movement_lists = self.related_facility.movementlist_set.all().order_by("-pk")
         show = get_params.get("show", "")
         if show == "arrivals":
-            return movement_lists.filter(list_type="ARR")
+            movement_lists = movement_lists.filter(list_type="ARR")
         elif show == "departures":
-            return movement_lists.filter(list_type="LVN")
-        return movement_lists
+            movement_lists = movement_lists.filter(list_type="LVN")
+
+        user = self.request.user
+        out = []
+        for mlist in movement_lists:
+            change = mlist.has_change_perm(user)
+            delete = mlist.has_delete_perm(user)
+            out.append(
+                {
+                    "obj": mlist,
+                    "can_change": change,
+                    "can_delete": delete,
+                }
+            )
+        return out
 
     def get_paginator_baseurl(self):
         query = ""
@@ -69,7 +81,7 @@ class MovementLists(FacilityMixin, ListView):
         return context
 
 
-class MovementListsAdd(FacilityMixin, FormView):
+class MovementListsAdd(UserPassesTestMixin, FacilityMixin, FormView):
 
     template_name = "main/movement-lists/movement-lists-add.html"
     form_class = CreateMovementListForm
@@ -88,6 +100,10 @@ class MovementListsAdd(FacilityMixin, FormView):
         context["facilities"] = self.all_facilities
         return context
 
+    def test_func(self):
+        user = self.request.user
+        return user.has_perm("main.add_movementlist")
+
     def form_valid(self, form):
         data = form.cleaned_data
         MovementList.objects.create(
@@ -100,7 +116,7 @@ class MovementListsAdd(FacilityMixin, FormView):
         return super().form_valid(form)
 
 
-class MovementListEdit(FacilityListMixin, UpdateView):
+class MovementListEdit(UserPassesTestMixin, FacilityListMixin, UpdateView):
 
     form_class = EditMovementListForm
     template_name = "main/movement-lists/movement-list-edit.html"
@@ -115,6 +131,12 @@ class MovementListEdit(FacilityListMixin, UpdateView):
 
     def get_object(self):
         return self.related_list
+
+    def test_func(self):
+        user = self.request.user
+        cur_list = self.get_object()
+        can_change = cur_list.has_change_perm(user)
+        return can_change
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -161,7 +183,7 @@ class MovementListEdit(FacilityListMixin, UpdateView):
         return super().form_valid(form)
 
 
-class MovementListDelete(FacilityListMixin, DeleteView):
+class MovementListDelete(UserPassesTestMixin, FacilityListMixin, DeleteView):
 
     model = MovementList
     template_name = "main/movement-lists/movement-list-delete.html"
@@ -169,6 +191,15 @@ class MovementListDelete(FacilityListMixin, DeleteView):
 
     def get_success_url(self):
         return reverse('movement-lists', args=[self.related_facility.slug])
+
+    def get_object(self):
+        return self.related_list
+
+    def test_func(self):
+        user = self.request.user
+        cur_list = self.get_object()
+        can_delete = cur_list.has_delete_perm(user)
+        return can_delete
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -56,7 +56,7 @@
 
   <div class="row mt-2">
     <div class="col-md">
-      {% if entries.count %}
+      {% if entries %}
       <ul class="list-unstyled mt-4">
         {% for entry in entries %}
           <li class="mt-2">
@@ -64,37 +64,17 @@
               <div class="card-body d-flex align-items-center flex-row p-3">
                 <div>
                   <h5 class="card-title">
-                      {{ entry.employee.position }} {{ entry.employee.full_name }}
-                      {% if entry.was_changed %}
+                      {{ entry.obj.employee.position }} {{ entry.obj.employee.full_name }}
+                      {% if entry.obj.was_changed %}
                       <span class="badge badge-info ml-1">Изменено</span>
                       {% endif %}
                   </h5>
                   <p class="card-text">
-                    Создана {{ entry.creation_datetime }} пользователем {{ entry.creator.full_name }}
+                    Создана {{ entry.obj.creation_datetime }} пользователем {{ entry.obj.creator.full_name }}
                   </p>
                 </div>
-                <div class="d-flex align-items-center ml-auto btn-group" role="group" aria-label="Управление списком">
-                  <a 
-                    href="{% url 'movement-list-entry-delete' facility_slug=related_facility.slug list_id=related_list.pk entry_id=entry.pk %}"
-                    class="btn btn-outline-danger"
-                    aria-label="Удалить"
-                  >
-                    <i class="fas fa-trash-alt"></i>
-                  </a>
-                  <a 
-                    href="{% url 'movement-list-entry-edit' facility_slug=related_facility.slug list_id=related_list.pk entry_id=entry.pk %}" 
-                    class="btn btn-outline-secondary"
-                    aria-label="Изменить"
-                  >
-                    <i class="fas fa-edit"></i>
-                  </a>
-                  <a 
-                    href="{% url 'movement-list-entry-history' facility_slug=related_facility.slug list_id=related_list.pk entry_id=entry.pk %}" 
-                    class="btn btn-outline-info"
-                    aria-label="История"
-                  >
-                    <i class="fas fa-history"></i>
-                  </a>
+                <div class="d-flex align-items-center ml-auto" role="group" aria-label="Управление списком">
+                  {% include "../../includes/options.html" with obj=entry.obj can_change=entry.can_change can_delete=entry.can_delete %}
                 </div>
               </div>
             </div>

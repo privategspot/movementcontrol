@@ -12,6 +12,7 @@ from django.template.loader import get_template
 from django.views.decorators.http import require_safe
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.mixins import UserPassesTestMixin
 
 from .mixins import FacilityListMixin
 from ..models import FacilityObject, MovementList, Employee, MovementEntry,\
@@ -22,14 +23,25 @@ from ..forms import CreateMovementEntryForm, EditMovementEntryForm
 class MovementListEntries(FacilityListMixin, ListView):
 
     template_name = "main/movement-list-entries/movement-list-entries.html"
-    ordering = ["-pk"]
     paginate_by = 10
     paginate_orphans = 0
     context_object_name = "entries"
 
-    @property
-    def queryset(self):
-        return self.related_list.movemententry_set.all()
+    def get_queryset(self):
+        entries = self.related_list.movemententry_set.all().order_by("-pk")
+        user = self.request.user
+        out = []
+        for entry in entries:
+            change = entry.has_change_perm(user)
+            delete = entry.has_delete_perm(user)
+            out.append(
+                {
+                    "obj": entry,
+                    "can_change": change,
+                    "can_delete": delete,
+                }
+            )
+        return out
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -78,7 +90,7 @@ def movement_list_entries_PDF(request, **kwargs):
     return response
 
 
-class MovementListEntriesAdd(FacilityListMixin, FormView):
+class MovementListEntriesAdd(UserPassesTestMixin, FacilityListMixin, FormView):
 
     template_name = "main/movement-list-entries/movement-list-entries-add.html"
     form_class = CreateMovementEntryForm
@@ -99,6 +111,10 @@ class MovementListEntriesAdd(FacilityListMixin, FormView):
         context["facilities"] = self.all_facilities
         return context
 
+    def test_func(self):
+        user = self.request.user
+        return user.has_perm("main.add_movemententry")
+
     def form_valid(self, form):
         data = form.cleaned_data
         employee = Employee.objects.create(
@@ -116,7 +132,7 @@ class MovementListEntriesAdd(FacilityListMixin, FormView):
         return super().form_valid(form)
 
 
-class MovementListEntryEdit(FacilityListMixin, UpdateView):
+class MovementListEntryEdit(UserPassesTestMixin, FacilityListMixin, UpdateView):
 
     form_class = EditMovementEntryForm
     template_name = "main/movement-list-entries/movement-list-entries-edit.html"
@@ -160,6 +176,13 @@ class MovementListEntryEdit(FacilityListMixin, UpdateView):
         context["entry_id"] = self.kwargs["entry_id"]
         return context
 
+    def test_func(self):
+        user = self.request.user
+        cur_entry = self.get_object()
+        print(cur_entry)
+        can_change = cur_entry.has_change_perm(user)
+        return can_change
+
     def form_valid(self, form):
         data = form.cleaned_data
         cur_employee = self.get_object().employee
@@ -190,7 +213,7 @@ class MovementListEntryEdit(FacilityListMixin, UpdateView):
         return super().form_valid(form)
 
 
-class MovementListEntryDelete(FacilityListMixin, DeleteView):
+class MovementListEntryDelete(UserPassesTestMixin, FacilityListMixin, DeleteView):
 
     model = MovementEntry
     pk_url_kwarg = "entry_id"
@@ -202,6 +225,11 @@ class MovementListEntryDelete(FacilityListMixin, DeleteView):
             self.related_list.pk,
         ])
 
+    def get_object(self):
+        return self.related_list.movemententry_set.get(
+            pk=self.kwargs["entry_id"]
+        )
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["header"] = self.related_facility.name
@@ -210,6 +238,12 @@ class MovementListEntryDelete(FacilityListMixin, DeleteView):
         context["related_list"] = self.related_list
         context["entry_id"] = self.kwargs["entry_id"]
         return context
+
+    def test_func(self):
+        user = self.request.user
+        cur_entry = self.get_object()
+        can_change = cur_entry.has_change_perm(user)
+        return can_change
 
     def post(self, request, *args, **kwargs):
         messages.success(self.request, "Запись успешно удалена")

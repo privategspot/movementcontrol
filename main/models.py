@@ -183,6 +183,17 @@ class MovementList(models.Model):
     def get_history_url(self):
         return reverse("movement-list-history", kwargs=self.get_url_kwargs())
 
+    def is_creator(self, user):
+        return self.creator == user
+
+    def has_change_perm(self, user):
+        is_creator = self.is_creator(user) and user.has_perm("main.change_owned_movementlist")
+        return is_creator or user.has_perm("main.change_movementlist")
+
+    def has_delete_perm(self, user):
+        is_creator = self.is_creator(user) and user.has_perm("main.delete_owned_movementlist")
+        return is_creator or user.has_perm("main.delete_movementlist")
+
     def __str__(self):
         return "Список %sов на %s" % (
             self.list_type_humanize,
@@ -270,8 +281,21 @@ class MovementEntry(models.Model):
     def get_history_url(self):
         return reverse("movement-list-entry-history", kwargs=self.get_url_kwargs())
 
+    def is_creator(self, user):
+        return self.creator == user
+
+    def has_change_perm(self, user):
+        is_creator = self.is_creator(user)
+        has_perm = user.has_perm("main.change_owned_movemententry")
+        print(has_perm)
+        return is_creator and has_perm or user.has_perm("main.change_movemententry")
+
+    def has_delete_perm(self, user):
+        is_creator = self.is_creator(user) and user.has_perm("main.delete_owned_movemententry")
+        return is_creator or user.has_perm("main.delete_movemententry")
+
     def __str__(self):
-        datetime = self.scheduled_datetime
+        datetime = self.creation_datetime
         return "Время создания %s.%s.%s %s:%s" % (
             datetime.day,
             datetime.month,
@@ -286,8 +310,8 @@ class MovementEntry(models.Model):
         verbose_name_plural = "Записи о заездах/отъездах"
 
         permissions = [
-            ("change_owned_movementlistentry", "Право изменения записи созданной пользователем"),
-            ("delete_owned_movementlistentry", "Право удаления записи созданной пользователем"),
+            ("change_owned_movemententry", "Право изменения записи созданной пользователем"),
+            ("delete_owned_movemententry", "Право удаления записи созданной пользователем"),
         ]
 
 

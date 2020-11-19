@@ -1,0 +1,33 @@
+<div class="dropdown">
+  <button class="btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <i class="fas fa-ellipsis-h"></i>
+  </button>
+  <div class="dropdown-menu" role="group" aria-labelledby="dropdownMenuButton">
+    {% if can_change %}
+    <a 
+    href="{{ obj.get_edit_url }}"
+    class="dropdown-item"
+    aria-label="Изменить"
+    >
+      Изменить <i class="fas fa-edit"></i>
+    </a>
+    {% endif %}
+    <a
+    href="{{ obj.get_history_url }}"
+    class="dropdown-item"
+    aria-label="История"
+    >
+      История <i class="fas fa-history"></i>
+    </a>
+    {% if can_delete %}
+    <a
+    href="{{ obj.get_delete_url }}"
+    class="dropdown-item"
+    aria-label="Удалить"
+    >
+      Удалить <i class="fas fa-trash-alt"></i>
+    </a>
+    {% endif %}
+  </div>
+</div>
+
