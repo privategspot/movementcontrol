@@ -1,13 +1,28 @@
 {% extends "../base/base.html" %}
 
 {% load crispy_forms_tags %}
+{% load static %}
 
 {% block meta_title %}
 Вход
 {% endblock meta_title %}
 
+{% block styles %}
+<link rel="stylesheet" href="{% static 'main/styles/login.css' %}">
+{% endblock styles %}
+
 {% block main_content %}
 <div class="container-xl">
+  <div class="row mt-4">
+    <div class="col-md">
+      <ul class="nav nav-pills">
+        <li class="nav-item ml-auto">
+          {% include "../includes/backbtn.html" %}
+        </li>
+      </ul>
+    </div>
+  </div>
+
   <div class="row justify-content-center">
     <div class="col-md-6 col-sm-8">
       <div class="card mt-4">
