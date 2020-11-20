@@ -1,7 +1,5 @@
 import pdfkit
-import pytz
 
-from django.conf import settings
 from django.contrib import messages
 from django.utils import timezone
 from django.urls import reverse
@@ -20,7 +18,8 @@ from ..models import FacilityObject, MovementList, Employee, MovementEntry,\
     MovementEntryHistory
 from ..forms import CreateMovementEntryForm, EditMovementEntryForm,\
     SearchEntryForm
-from ..utils import get_paginator_baseurl
+from ..utils import get_paginator_baseurl, datetime_to_current_tz
+from ..utils.link import Link
 
 
 class MovementListEntries(FacilityListMixin, ListView):
@@ -63,6 +62,12 @@ class MovementListEntries(FacilityListMixin, ListView):
             )
         return out
 
+    def get_breadcrumbs_links(self):
+        return [
+            Link(self.related_facility.get_absolute_url(), self.related_facility),
+            Link(self.related_list.get_absolute_url(), self.related_list),
+        ]
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["header"] = self.related_facility.name
@@ -72,6 +77,7 @@ class MovementListEntries(FacilityListMixin, ListView):
         context["paginator"].baseurl = get_paginator_baseurl(self.request)
         search_action = self.related_list.get_absolute_url()
         context["search_form"] = SearchEntryForm(search_action)
+        context["links"] = self.get_breadcrumbs_links()
         return context
 
 
@@ -96,8 +102,7 @@ def movement_list_entries_PDF(request, **kwargs):
     )
     html = template.render(context)
     pdf = pdfkit.from_string(html, False)
-    settings_tz = pytz.timezone(settings.TIME_ZONE)
-    scheduled_date = related_list.scheduled_datetime.astimezone(settings_tz)
+    scheduled_date = datetime_to_current_tz(related_list.scheduled_datetime)
     filename = context["related_facility"].slug + "-" +\
         scheduled_date.strftime("%d-%b-%Y") + ".pdf"
 
@@ -136,12 +141,20 @@ class MovementListEntriesAdd(UserPassesTestMixin, FacilityListMixin, FormView):
         kwargs["suggestions"] = self.get_suggestions_dict()
         return kwargs
 
+    def get_breadcrumbs_links(self):
+        return [
+            Link(self.related_facility.get_absolute_url(), self.related_facility),
+            Link(self.related_list.get_absolute_url(), self.related_list),
+            Link(self.related_list.get_add_url(), "Добавление записи"),
+        ]
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["header"] = self.related_facility.name
         context["related_facility"] = self.related_facility
         context["related_list"] = self.related_list
         context["facilities"] = self.all_facilities
+        context["links"] = self.get_breadcrumbs_links()
         return context
 
     def test_func(self):
@@ -200,6 +213,16 @@ class MovementListEntryEdit(UserPassesTestMixin, FacilityListMixin, UpdateView):
             "position": obj.employee.position,
         }
 
+    def get_breadcrumbs_links(self):
+        return [
+            Link(self.related_facility.get_absolute_url(), self.related_facility),
+            Link(self.related_list.get_absolute_url(), self.related_list),
+            Link(
+                self.get_object().get_edit_url(),
+                self.get_object().employee.full_name + ", редактирование"
+            ),
+        ]
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["header"] = self.related_facility.name
@@ -207,6 +230,7 @@ class MovementListEntryEdit(UserPassesTestMixin, FacilityListMixin, UpdateView):
         context["facilities"] = self.all_facilities
         context["related_list"] = self.related_list
         context["entry_id"] = self.kwargs["entry_id"]
+        context["links"] = self.get_breadcrumbs_links()
         return context
 
     def test_func(self):
@@ -288,10 +312,13 @@ class MovementListEntryHistory(FacilityListMixin, ListView):
     template_name = "main/movement-list-entries/movement-list-entry-history.html"
     context_object_name = "history_entries"
 
-    def get_queryset(self):
-        entry = self.related_list.movemententry_set.get(
+    def get_entry(self):
+        return self.related_list.movemententry_set.get(
             pk=self.kwargs["entry_id"]
         )
+
+    def get_queryset(self):
+        entry = self.get_entry()
         queryset = entry.movemententryhistory_set.all()
         queryset = queryset.order_by("-pk")
         data = []
@@ -306,10 +333,21 @@ class MovementListEntryHistory(FacilityListMixin, ListView):
 
         return data
 
+    def get_breadcrumbs_links(self):
+        return [
+            Link(self.related_facility.get_absolute_url(), self.related_facility),
+            Link(self.related_list.get_absolute_url(), self.related_list),
+            Link(
+                self.get_entry().get_history_url(),
+                self.get_entry().employee.full_name + ", история изменений"
+            ),
+        ]
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["header"] = self.related_facility.name
         context["related_facility"] = self.related_facility
         context["facilities"] = self.all_facilities
         context["related_list"] = self.related_list
+        context["links"] = self.get_breadcrumbs_links()
         return context

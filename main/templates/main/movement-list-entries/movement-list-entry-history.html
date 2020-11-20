@@ -1,5 +1,7 @@
 {% extends "../../base/base.html" %}
 
+{% load breadcrumbs %}
+
 {% block meta_title %}
 История изменений
 {% endblock meta_title %}
@@ -8,14 +10,7 @@
 <div class="container-lg">
   <div class="row">
     <div class="col-md">
-      <h2 class="h3">
-        Список {{ related_list.list_type_humanize }}ов на {{ related_list.scheduled_datetime|date:"d E Y" }}
-      </h2>
-      <h3 class="h4 font-weight-mb-4 card-title">История изменений</h3>
-      <ul class="nav nav-pills">
-        <li class="nav-item ml-auto">
-          {% include "../../includes/backbtn.html" %}
-        </li>
+        {% breadcrumbs links %}
       </ul>
     </div>
   </div>

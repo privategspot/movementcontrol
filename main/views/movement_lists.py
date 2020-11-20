@@ -12,6 +12,7 @@ from ..models import MovementList,\
     MovementListHistory as MovementListHistoryModel
 from ..forms import CreateMovementListForm, EditMovementListForm
 from ..utils import get_paginator_baseurl
+from ..utils.link import Link
 
 
 class MovementLists(FacilityMixin, ListView):
@@ -121,12 +122,20 @@ class MovementListEdit(UserPassesTestMixin, FacilityListMixin, UpdateView):
         can_change = cur_list.has_change_perm(user)
         return can_change
 
+    def get_breadcrumbs_links(self):
+        return [
+            Link(self.related_facility.get_absolute_url(), self.related_facility),
+            Link(self.related_list.get_absolute_url(), self.related_list),
+            Link(self.related_list.get_edit_url(), "Перенос даты"),
+        ]
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["header"] = self.related_facility.name
         context["related_facility"] = self.related_facility
         context["facilities"] = self.all_facilities
         context["related_list"] = self.related_list
+        context["links"] = self.get_breadcrumbs_links()
         return context
 
     def form_valid(self, form):
@@ -231,10 +240,18 @@ class MovementListHistory(FacilityListMixin, ListView):
 
         return data
 
+    def get_breadcrumbs_links(self):
+        return [
+            Link(self.related_facility.get_absolute_url(), self.related_facility),
+            Link(self.related_list.get_absolute_url(), self.related_list),
+            Link(self.related_list.get_history_url(), "История изменений"),
+        ]
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["header"] = self.related_facility.name
         context["related_facility"] = self.related_facility
         context["facilities"] = self.all_facilities
         context["related_list"] = self.related_list
+        context["links"] = self.get_breadcrumbs_links()
         return context
