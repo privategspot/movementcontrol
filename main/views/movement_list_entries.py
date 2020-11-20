@@ -20,6 +20,7 @@ from ..models import FacilityObject, MovementList, Employee, MovementEntry,\
     MovementEntryHistory
 from ..forms import CreateMovementEntryForm, EditMovementEntryForm,\
     SearchEntryForm
+from ..utils import get_paginator_baseurl
 
 
 class MovementListEntries(FacilityListMixin, ListView):
@@ -68,13 +69,7 @@ class MovementListEntries(FacilityListMixin, ListView):
         context["related_facility"] = self.related_facility
         context["facilities"] = self.all_facilities
         context["related_list"] = self.related_list
-        context["paginator"].baseurl = reverse(
-            "movement-list-entries",
-            args=[
-                context["related_facility"].slug,
-                context["related_list"].pk,
-            ]
-        ) + "?page="
+        context["paginator"].baseurl = get_paginator_baseurl(self.request)
         search_action = self.related_list.get_absolute_url()
         context["search_form"] = SearchEntryForm(search_action)
         return context

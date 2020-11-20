@@ -1,6 +1,5 @@
 from django.contrib import messages
 from django.urls import reverse
-from django.http.request import QueryDict
 from django.core import serializers
 from django.utils import timezone
 from django.views.generic.list import ListView
@@ -12,6 +11,7 @@ from .mixins import FacilityMixin, FacilityListMixin
 from ..models import MovementList,\
     MovementListHistory as MovementListHistoryModel
 from ..forms import CreateMovementListForm, EditMovementListForm
+from ..utils import get_paginator_baseurl
 
 
 class MovementLists(FacilityMixin, ListView):
@@ -45,23 +45,6 @@ class MovementLists(FacilityMixin, ListView):
             )
         return out
 
-    def get_paginator_baseurl(self):
-        query = ""
-        cur_get = self.request.GET.copy()
-        cur_get_len = len(cur_get.dict())
-        if not cur_get:
-            query = "?page="
-        elif cur_get_len == 1 and "page" in cur_get:
-            query = "?page="
-        elif cur_get_len > 1 and "page" in cur_get:
-            cur_get.pop("page")
-            cur_get = QueryDict(cur_get.urlencode())
-            query = "?" + cur_get.urlencode() + "&page="
-        elif cur_get_len >= 1:
-            cur_get = QueryDict(cur_get.urlencode())
-            query = "?" + cur_get.urlencode() + "&page="
-        return self.request.path + query
-
     def get_show_message(self):
         cur_get = self.request.GET
         if "show" not in cur_get:
@@ -76,7 +59,7 @@ class MovementLists(FacilityMixin, ListView):
         context["header"] = self.related_facility.name
         context["related_facility"] = self.related_facility
         context["facilities"] = self.all_facilities
-        context["paginator"].baseurl = self.get_paginator_baseurl()
+        context["paginator"].baseurl = get_paginator_baseurl(self.request)
         context["show"] = self.get_show_message()
         return context
 
