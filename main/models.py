@@ -4,6 +4,8 @@ from django.core import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 
+from .utils import datetime_to_current_tz
+
 
 class FacilityObject(models.Model):
 
@@ -61,7 +63,6 @@ class Employee(AbstractPerson):
 
     def toJSON(self):
         return serializers.serialize("json", [self])
-
     class Meta:
         verbose_name = "Сотрудник"
         verbose_name_plural = "Сотрудники"
@@ -172,7 +173,7 @@ class MovementList(models.Model):
         return reverse("movement-list-entries", kwargs=self.get_url_kwargs())
 
     def get_add_url(self):
-        return reverse("movement-lists-add", kwargs=self.get_url_kwargs())
+        return reverse("movement-lists-add", args=[self.facility.slug])
 
     def get_delete_url(self):
         return reverse("movement-list-delete", kwargs=self.get_url_kwargs())
@@ -187,17 +188,23 @@ class MovementList(models.Model):
         return self.creator == user
 
     def has_change_perm(self, user):
-        is_creator = self.is_creator(user) and user.has_perm("main.change_owned_movementlist")
+        is_creator = self.is_creator(user) and user.has_perm(
+            "main.change_owned_movementlist"
+        )
         return is_creator or user.has_perm("main.change_movementlist")
 
     def has_delete_perm(self, user):
-        is_creator = self.is_creator(user) and user.has_perm("main.delete_owned_movementlist")
+        is_creator = self.is_creator(user) and user.has_perm(
+            "main.delete_owned_movementlist"
+        )
         return is_creator or user.has_perm("main.delete_movementlist")
 
     def __str__(self):
         return "Список %sов на %s" % (
             self.list_type_humanize,
-            self.scheduled_datetime,
+            datetime_to_current_tz(
+                self.scheduled_datetime
+            ).strftime("%d.%m.%Y"),
         )
 
     class Meta:
@@ -206,8 +213,14 @@ class MovementList(models.Model):
         verbose_name_plural = "Списки заездов/отъездов"
 
         permissions = [
-            ("change_owned_movementlist", "Право изменения списка созданного пользователем"),
-            ("delete_owned_movementlist", "Право удаления списка созданного пользователем"),
+            (
+                "change_owned_movementlist",
+                "Право изменения списка созданного пользователем"
+            ),
+            (
+                "delete_owned_movementlist",
+                "Право удаления списка созданного пользователем"
+            ),
         ]
 
 
@@ -280,16 +293,28 @@ class MovementEntry(models.Model):
         }
 
     def get_add_url(self):
-        return reverse("movement-list-entry-add", kwargs=self.get_url_kwargs())
+        return reverse(
+            "movement-list-entries-add",
+            args=[self.movement_list.facility.slug, self.movement_list.pk]
+        )
 
     def get_delete_url(self):
-        return reverse("movement-list-entry-delete", kwargs=self.get_url_kwargs())
+        return reverse(
+            "movement-list-entry-delete",
+            kwargs=self.get_url_kwargs()
+        )
 
     def get_edit_url(self):
-        return reverse("movement-list-entry-edit", kwargs=self.get_url_kwargs())
+        return reverse(
+            "movement-list-entry-edit",
+            kwargs=self.get_url_kwargs()
+        )
 
     def get_history_url(self):
-        return reverse("movement-list-entry-history", kwargs=self.get_url_kwargs())
+        return reverse(
+            "movement-list-entry-history",
+            kwargs=self.get_url_kwargs()
+        )
 
     def is_creator(self, user):
         return self.creator == user
@@ -298,10 +323,14 @@ class MovementEntry(models.Model):
         is_creator = self.is_creator(user)
         has_perm = user.has_perm("main.change_owned_movemententry")
         print(has_perm)
-        return is_creator and has_perm or user.has_perm("main.change_movemententry")
+        return is_creator and has_perm or user.has_perm(
+            "main.change_movemententry"
+        )
 
     def has_delete_perm(self, user):
-        is_creator = self.is_creator(user) and user.has_perm("main.delete_owned_movemententry")
+        is_creator = self.is_creator(user) and user.has_perm(
+            "main.delete_owned_movemententry"
+        )
         return is_creator or user.has_perm("main.delete_movemententry")
 
     def __str__(self):
@@ -320,8 +349,14 @@ class MovementEntry(models.Model):
         verbose_name_plural = "Записи о заездах/отъездах"
 
         permissions = [
-            ("change_owned_movemententry", "Право изменения записи созданной пользователем"),
-            ("delete_owned_movemententry", "Право удаления записи созданной пользователем"),
+            (
+                "change_owned_movemententry",
+                "Право изменения записи созданной пользователем"
+            ),
+            (
+                "delete_owned_movemententry",
+                "Право удаления записи созданной пользователем"
+            ),
         ]
 
 
