@@ -1,0 +1,14 @@
+<nav aria-label="Хлебные крошки">
+  <ol class="breadcrumb">
+    {% for link in links %}
+    {% if forloop.last %}
+    <li class="breadcrumb-item active" aria-current="page">
+      {{ link.value }}
+    {% else %}
+    <li class="breadcrumb-item">
+      <a href="{{ link }}">{{ link.value }}</a>
+    {% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+</nav>
