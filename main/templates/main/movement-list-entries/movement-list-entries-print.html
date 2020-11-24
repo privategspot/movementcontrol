@@ -31,7 +31,7 @@
     {% for entry in entries %}
     <tr>
       <td>{{ forloop.counter }}</td>
-      <td>{{ entry.employee.full_name }}</td>
+      <td>{{ entry.employee.initials }}</td>
       <td>{{ entry.employee.position }}</td>
     </tr>
     {% endfor %}

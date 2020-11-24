@@ -55,6 +55,16 @@ class AbstractPerson(models.Model):
         full_name = full_name.strip()
         return full_name
 
+    @property
+    def initials(self):
+        initials = "%s %s." % (
+            self.last_name,
+            self.first_name[0],
+        )
+        if len(self.patronymic):
+            initials = initials + self.patronymic[0] + "."
+        return initials
+
     class Meta:
         abstract = True
 
@@ -84,6 +94,16 @@ class User(AbstractUser):
         )
         full_name = full_name.strip()
         return full_name
+
+    @property
+    def initials(self):
+        initials = "%s %s." % (
+            self.last_name,
+            self.first_name[0],
+        )
+        if len(self.patronymic):
+            initials = initials + self.patronymic[0] + "."
+        return initials
 
 
 class HistoryMixin(models.Model):

@@ -65,10 +65,10 @@
     <div class="col-md">
       {% if entries %}
         {% if user.is_authenticated %}
-          {% include "../../includes/movement-list-entries-authorized.html" with entries=entries %}
+          {% include "../../includes/movement-list-entries-detailed.html" with entries=entries %}
         {% else %}
           <div class="mt-4">
-          {% include "../../includes/movement-list-entries-unauthorized.html" with entries=entries %}
+          {% include "../../includes/movement-list-entries-table.html" with entries=entries %}
           </div>
         {% endif %}
       {% else %}
