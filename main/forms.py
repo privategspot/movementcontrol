@@ -134,13 +134,13 @@ class SearchEntryForm(forms.Form):
         self.helper.add_input(Submit("submit", "Найти"))
 
     PREDICATS = [
-        ("USERS", "ФИО пользователей"),
-        ("EMPLOYEES", "ФИО сотрудников"),
+        ("EMPLOYEES", "ФИО сотрудника"),
+        ("USERS", "ФИО автора"),
     ]
 
     search_request = forms.CharField(label="Запрос")
     predicat = forms.ChoiceField(
-        label="Искать среди",
+        label="Искать по",
         widget=forms.Select(),
         choices=PREDICATS,
     )
