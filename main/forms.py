@@ -27,7 +27,7 @@ class CreateMovementListForm(forms.ModelForm):
         model = MovementList
         fields = ["list_type", "scheduled_datetime"]
         labels = {
-            "scheduled_datetime": "Дата заезда/отъезда"
+            "scheduled_datetime": "Дата заезда/выезда"
         }
         widgets = {
             "scheduled_datetime": forms.DateTimeInput(
@@ -46,7 +46,7 @@ class EditMovementListForm(forms.ModelForm):
         model = MovementList
         fields = ["scheduled_datetime"]
         labels = {
-            "scheduled_datetime": "Дата заезда/отъезда"
+            "scheduled_datetime": "Дата заезда/выезда"
         }
         widgets = {
             "scheduled_datetime": forms.DateTimeInput(

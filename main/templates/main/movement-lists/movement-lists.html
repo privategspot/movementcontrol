@@ -35,7 +35,7 @@
         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
           <a class="dropdown-item" href="{{ request.path }}">все</a>
           <a class="dropdown-item" href="{{ request.path }}?show=arrivals">только заезды</a>
-          <a class="dropdown-item" href="{{ request.path }}?show=departures">только отъезды</a>
+          <a class="dropdown-item" href="{{ request.path }}?show=departures">только выезды</a>
         </div>
       </div>
     </div>
@@ -63,7 +63,7 @@
               <div class="card-body d-flex align-items-center flex-row p-3">
                 <div>
                   <h5 class="card-title">
-                    Список {{ mlist.obj.list_type_humanize }}ов на {{ mlist.obj.scheduled_datetime|date:"d E Y" }}
+                    {{ mlist.obj.list_type_humanize|title }} на {{ mlist.obj.scheduled_datetime|date:"d E Y" }}
                     {% if mlist.obj.was_changed %}
                     <span class="badge badge-info ml-1">перенесённый</span>
                     {% endif %}

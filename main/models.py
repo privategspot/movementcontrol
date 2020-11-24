@@ -113,7 +113,7 @@ class MovementList(models.Model):
     LEAVING = "LVN"
     TYPES_OF_LIST = [
         (ARRIVING, "Заезд"),
-        (LEAVING, "Отъезд"),
+        (LEAVING, "Выезд"),
     ]
     list_type = models.CharField(
         "Тип списка",
@@ -200,8 +200,8 @@ class MovementList(models.Model):
         return is_creator or user.has_perm("main.delete_movementlist")
 
     def __str__(self):
-        return "Список %sов на %s" % (
-            self.list_type_humanize,
+        return "%s на %s" % (
+            self.list_type_humanize.title(),
             datetime_to_current_tz(
                 self.scheduled_datetime
             ).strftime("%d.%m.%Y"),
