@@ -25,8 +25,6 @@ from ..utils.link import Link
 class MovementListEntries(FacilityListMixin, ListView):
 
     template_name = "main/movement-list-entries/movement-list-entries.html"
-    paginate_by = 10
-    paginate_orphans = 0
     context_object_name = "entries"
 
     def get_queryset(self):
@@ -77,7 +75,6 @@ class MovementListEntries(FacilityListMixin, ListView):
         context["related_facility"] = self.related_facility
         context["facilities"] = self.all_facilities
         context["related_list"] = self.related_list
-        context["paginator"].baseurl = get_paginator_baseurl(self.request)
         search_action = self.related_list.get_absolute_url()
         context["search_form"] = SearchEntryForm(search_action)
         context["links"] = self.get_breadcrumbs_links()
