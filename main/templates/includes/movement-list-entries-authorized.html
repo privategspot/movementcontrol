@@ -1,0 +1,24 @@
+<ul class="list-unstyled mt-4">
+  {% for entry in entries %}
+    <li class="mt-2">
+      <div class="card shadow-sm">
+        <div class="card-body d-flex align-items-center flex-row p-3">
+          <div>
+            <h5 class="card-title">
+              {{ entry.obj.employee.position }} {{ entry.obj.employee.full_name }}
+              {% if entry.obj.was_changed %}
+              <span class="badge badge-info ml-1">Изменено</span>
+              {% endif %}
+            </h5>
+            <p class="card-text">
+              Создана {{ entry.obj.creation_datetime }} пользователем {{ entry.obj.creator.full_name }}
+            </p>
+          </div>
+          <div class="d-flex align-items-center ml-auto" role="group" aria-label="Управление списком">
+            {% include "./options.html" with obj=entry.obj can_change=entry.can_change can_delete=entry.can_delete %}
+          </div>
+        </div>
+      </div>
+    </li>
+  {% endfor %}
+</ul>

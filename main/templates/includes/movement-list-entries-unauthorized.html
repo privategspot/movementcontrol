@@ -1,0 +1,16 @@
+<table class="table-striped table-bordered w-100">
+  <thead>
+    <th class="table-cell-pd" scope="col">Номер</th>
+    <th class="table-cell-pd" scope="col">ФИО</th>
+    <th class="table-cell-pd" scope="col">Должность</th>
+  </thead>
+  <tbody>
+    {% for entry in entries %}
+    <tr>
+      <th class="table-cell-pd"  scope="row">{{ forloop.counter }}</th>
+      <td class="table-cell-pd" >{{ entry.obj.employee.full_name }}</td>
+      <td class="table-cell-pd" >{{ entry.obj.employee.position }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
