@@ -56,6 +56,9 @@
           >
             Поиск
           </button>
+          {% if request.GET %}
+          <a class="btn btn-outline-primary" href="{{ related_list.get_absolute_url }}">Сбросить фильтр</a>
+          {% endif %}
         </li>
       </ul>
     </div>
