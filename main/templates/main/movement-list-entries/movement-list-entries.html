@@ -30,7 +30,7 @@
 
       {% breadcrumbs links %}
 
-      <ul class="nav nav-pills mt-4">
+      <ul class="nav nav-pills">
         <li class="nav-item">
           <a class="nav-link active" href="{{ related_list.get_absolute_url }}">Записи</a>
         </li>
@@ -77,7 +77,7 @@
     </div>
   </div>
 
-  {% comment %} Пагинация записей {% endcomment %}
+  {% comment %} Пагинация записей
   {% if paginator.num_pages and paginator.num_pages > 1 %}
   <footer class="row mt-4">
     <div class="col">
@@ -91,7 +91,7 @@
     </div>
   </footer>
   {% endif %}
-</div>
+</div> {% endcomment %}
 
 <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
