@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib import messages
 from django.urls import reverse
 from django.core import serializers
@@ -93,7 +95,10 @@ class MovementListsAdd(UserPassesTestMixin, FacilityMixin, FormView):
         MovementList.objects.create(
             facility=self.related_facility,
             list_type=data["list_type"],
-            scheduled_datetime=data["scheduled_datetime"],
+            scheduled_datetime=datetime.datetime.combine(
+                data["move_date"],
+                data["move_time"],
+            ),
             creator=self.request.user,
         )
         messages.success(self.request, "Список успешно добавлен")

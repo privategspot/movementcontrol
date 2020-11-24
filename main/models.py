@@ -224,7 +224,7 @@ class MovementList(models.Model):
             self.list_type_humanize.title(),
             datetime_to_current_tz(
                 self.scheduled_datetime
-            ).strftime("%d.%m.%Y"),
+            ).strftime("%d.%m.%Y %H:%M"),
         )
 
     class Meta:
@@ -342,7 +342,6 @@ class MovementEntry(models.Model):
     def has_change_perm(self, user):
         is_creator = self.is_creator(user)
         has_perm = user.has_perm("main.change_owned_movemententry")
-        print(has_perm)
         return is_creator and has_perm or user.has_perm(
             "main.change_movemententry"
         )

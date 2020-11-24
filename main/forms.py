@@ -23,21 +23,29 @@ class CustomUserChangeForm(UserChangeForm):
 
 class CreateMovementListForm(forms.ModelForm):
 
+    move_date = forms.DateField(
+        widget=forms.DateInput(
+            attrs={
+                "placeholder": "25.10.2020",
+                "type": "date",
+                "min": timezone.now().strftime("%Y-%m-%d")
+            }
+        ),
+        label="Дата"
+    )
+    move_time = forms.TimeField(
+        widget=forms.TimeInput(
+            attrs={
+                "placeholder": "14:30",
+                "type": "time",
+            }
+        ),
+        label="Время"
+    )
+
     class Meta:
         model = MovementList
-        fields = ["list_type", "scheduled_datetime"]
-        labels = {
-            "scheduled_datetime": "Дата заезда/выезда"
-        }
-        widgets = {
-            "scheduled_datetime": forms.DateTimeInput(
-                attrs={
-                    "placeholder": "25.10.2020 14:30",
-                    "type": "date",
-                    "min": timezone.now().strftime("%Y-%m-%d")
-                }
-            )
-        }
+        fields = ["list_type"]
 
 
 class EditMovementListForm(forms.ModelForm):
