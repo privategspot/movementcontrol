@@ -10,7 +10,7 @@
   }
 
   th, td {
-    padding: 4px 8px;
+    padding: 0.4em 0.8em;
   }
 
   table, th, td {
@@ -21,10 +21,10 @@
 </head>
 <body>
   <h1>{{ header }}</h1>
-  <h2>Список {{ related_list.list_type_humanize }}ов на {{ related_list.scheduled_datetime|date }}</h2>
+  <h2>{{ related_list.list_type_humanize|title }} на {{ related_list.scheduled_datetime|date }}</h2>
   <table>
     <tr>
-      <th>Индекс</th>
+      <th>Номер</th>
       <th>ФИО</th>
       <th>Должность</th>
     </tr>
