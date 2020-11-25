@@ -95,7 +95,7 @@ def movement_list_entries_PDF(request, **kwargs):
     context["header"] = related_facility.name
     context["related_facility"] = related_facility
     context["related_list"] = related_list
-    context["entries"] = related_list.movemententry_set.all()
+    context["entries"] = related_list.movemententry_set.all().order_by("-pk")
 
     template = get_template(
         "main/movement-list-entries/movement-list-entries-print.html"
