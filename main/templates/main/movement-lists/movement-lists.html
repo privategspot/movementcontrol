@@ -22,7 +22,8 @@
       </ul>
       {% endif %}
       </div>
-      <div class="col-md-12">
+      {% if perms.main.add_movementlist %}
+      <div class="col-md-12 mb-4">
         <ul class="nav nav-pills">
           <li class="nav-item">
             <a class="nav-link active" href="{{ related_facility.get_absolute_url }}">Списки</a>
@@ -35,11 +36,12 @@
           </li>
         </ul>
       </div>
+      {% endif %}
     </nav>
   </header>
 
   <div class="row">
-    <div class="col-md dropdown show d-flex align-items-center mt-4">
+    <div class="col-md dropdown show d-flex align-items-center">
       <span class="mr-2">Показывать</span>
       <div>
         <a class="btn btn-outline-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
