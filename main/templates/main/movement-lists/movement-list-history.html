@@ -22,8 +22,8 @@
           <li class="card shadow-sm mt-2">
             <div class="card-body">
               <h4 class="card-title h5">
-              Перенос с {{ entry.prev_change.scheduled_datetime|date:"d E Y" }} 
-              на {{ entry.post_change.scheduled_datetime|date:"d E Y" }}
+              Перенос с {{ entry.prev_change.scheduled_datetime|date:"d E Y H:i" }} 
+              на {{ entry.post_change.scheduled_datetime|date:"d E Y H:i" }}
               </h4>
               <p class="card-text">
               {{ entry.entry.modified_by.initials }} в {{ entry.entry.modified_datetime|date:"H:i d.m.Y" }}
