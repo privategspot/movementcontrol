@@ -1,3 +1,4 @@
+import pytz
 import datetime
 
 from django.contrib import messages
@@ -8,6 +9,7 @@ from django.views.generic.list import ListView
 from django.views.generic.edit import FormView
 from django.views.generic.edit import UpdateView, DeleteView
 from django.contrib.auth.mixins import UserPassesTestMixin
+from movementcontrol.settings import TIME_ZONE
 
 from .mixins import FacilityMixin, FacilityListMixin
 from ..models import MovementList,\
@@ -105,7 +107,7 @@ class MovementListsAdd(UserPassesTestMixin, FacilityMixin, FormView):
         return super().form_valid(form)
 
 
-class MovementListEdit(UserPassesTestMixin, FacilityListMixin, UpdateView):
+class MovementListEdit(UserPassesTestMixin, FacilityListMixin, FormView):
 
     form_class = EditMovementListForm
     template_name = "main/movement-lists/movement-list-edit.html"
@@ -146,24 +148,25 @@ class MovementListEdit(UserPassesTestMixin, FacilityListMixin, UpdateView):
     def form_valid(self, form):
         xml_serializer = serializers.get_serializer("xml")()
         data = form.cleaned_data
-        cur_list = self.related_list
-        queryset_with_cur_list = self.related_facility.movementlist_set.filter(
-            pk=self.kwargs["list_id"]
-        )
+        cur_list = self.get_object()
 
         # Сериализируем данные до внесения изменения
         old_data = xml_serializer.serialize(
-            queryset_with_cur_list,
+            [cur_list],
             fields=("scheduled_datetime")
         )
 
         # вносим изменения
-        queryset_with_cur_list[0].scheduled_datetime = data["scheduled_datetime"]
-        queryset_with_cur_list[0].save(update_fields=["scheduled_datetime"])
+        new_scheduled_datetime = datetime.datetime.combine(
+            data["move_date"],
+            data["move_time"],
+        )
+        cur_list.scheduled_datetime = new_scheduled_datetime
+        cur_list.save()
 
         # Сериализируем данные после внесения изменения
         new_data = xml_serializer.serialize(
-            queryset_with_cur_list,
+            [cur_list],
             fields=("scheduled_datetime")
         )
 
