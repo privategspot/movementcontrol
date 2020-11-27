@@ -69,6 +69,16 @@ class MovementListEntries(FacilityListMixin, ListView):
             Link(self.related_list.get_absolute_url(), self.related_list),
         ]
 
+    def get_suggestions_list(self):
+        first_name_sug = MovementEntry.objects.get_autocomplete_suggestions("first_name")
+        last_name_sug = MovementEntry.objects.get_autocomplete_suggestions("last_name")
+        patronymic_sug = MovementEntry.objects.get_autocomplete_suggestions("patronymic")
+        return [
+            *first_name_sug,
+            *last_name_sug,
+            *patronymic_sug,
+        ]
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["header"] = self.related_facility.name
@@ -76,7 +86,10 @@ class MovementListEntries(FacilityListMixin, ListView):
         context["facilities"] = self.all_facilities
         context["related_list"] = self.related_list
         search_action = self.related_list.get_absolute_url()
-        context["search_form"] = SearchEntryForm(search_action)
+        context["search_form"] = SearchEntryForm(
+            search_action,
+            suggestions=self.get_suggestions_list()
+        )
         context["links"] = self.get_breadcrumbs_links()
         return context
 

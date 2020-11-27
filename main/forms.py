@@ -137,12 +137,21 @@ class EditMovementEntryForm(forms.ModelForm):
 class SearchEntryForm(forms.Form):
 
     def __init__(self, action, *args, **kwargs):
+        _suggestions = kwargs.pop("suggestions", None)
         super().__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.disable_csrf = True
         self.helper.form_method = "GET"
         self.helper.form_action = action
         self.helper.add_input(Submit("submit", "Найти"))
+        self.fields["search_request"].widget = ListTextWidget(
+            attrs={
+                "placeholder": "Иван Иванов Иванович",
+                "autocomplete": "off"
+            },
+            data_list=_suggestions,
+            name="search_request"
+        )
 
     PREDICATS = [
         ("EMPLOYEES", "ФИО сотрудника"),
