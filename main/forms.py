@@ -52,8 +52,8 @@ class EditMovementListForm(forms.Form):
 
     move_date = forms.DateField(
         widget=forms.DateInput(
+            format=('%Y-%m-%d'),
             attrs={
-                "placeholder": "25.10.2020",
                 "type": "date",
                 "min": timezone.now().strftime("%Y-%m-%d")
             }
@@ -63,7 +63,6 @@ class EditMovementListForm(forms.Form):
     move_time = forms.TimeField(
         widget=forms.TimeInput(
             attrs={
-                "placeholder": "14:30",
                 "type": "time",
             }
         ),

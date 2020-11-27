@@ -15,7 +15,7 @@ from .mixins import FacilityMixin, FacilityListMixin
 from ..models import MovementList,\
     MovementListHistory as MovementListHistoryModel
 from ..forms import CreateMovementListForm, EditMovementListForm
-from ..utils import get_paginator_baseurl
+from ..utils import get_paginator_baseurl, datetime_to_current_tz
 from ..utils.link import Link
 
 
@@ -144,6 +144,15 @@ class MovementListEdit(UserPassesTestMixin, FacilityListMixin, FormView):
         context["related_list"] = self.related_list
         context["links"] = self.get_breadcrumbs_links()
         return context
+
+    def get_initial(self):
+        list_datetime = datetime_to_current_tz(
+            self.related_list.scheduled_datetime
+        )
+        return {
+            "move_date": list_datetime.date,
+            "move_time": list_datetime.time().strftime("%H:%M"),
+        }
 
     def form_valid(self, form):
         xml_serializer = serializers.get_serializer("xml")()
