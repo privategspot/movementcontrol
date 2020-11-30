@@ -13,7 +13,7 @@ from django.http import HttpResponseRedirect
 from .mixins import FacilityMixin, FacilityListMixin
 from ..models import MovementList,\
     MovementListHistory as MovementListHistoryModel
-from ..forms import CreateMovementListForm, EditMovementListForm
+from ..forms import CreateMovementListForm, EditMovementListForm, SearchListForm
 from ..utils import get_paginator_baseurl, datetime_to_current_tz
 from ..utils.link import Link
 
@@ -34,6 +34,11 @@ class MovementLists(FacilityMixin, ListView):
             movement_lists = movement_lists.filter(list_type="ARR")
         elif show == "departures":
             movement_lists = movement_lists.filter(list_type="LVN")
+
+        search_date = get_params.get("search_date", False)
+        if search_date:
+            print("request")
+            movement_lists = movement_lists.filter(scheduled_datetime__contains=search_date)
 
         user = self.request.user
         out = []
@@ -65,6 +70,8 @@ class MovementLists(FacilityMixin, ListView):
         context["facilities"] = self.all_facilities
         context["paginator"].baseurl = get_paginator_baseurl(self.request)
         context["show"] = self.get_show_message()
+        search_action = self.related_facility.get_absolute_url()
+        context["search_form"] = SearchListForm(search_action)
         return context
 
 

@@ -1,5 +1,7 @@
 {% extends "../../base/base.html" %}
 
+{% load crispy_forms_tags %}
+
 {% block meta_title %}
 {{ related_facility.name }} | Списки
 {% endblock meta_title %}
@@ -53,6 +55,19 @@
           <a class="dropdown-item" href="{{ request.path }}?show=arrivals">только заезды</a>
           <a class="dropdown-item" href="{{ request.path }}?show=departures">только выезды</a>
         </div>
+      </div>
+      <div class="nav-item btn-group ml-auto" role="group">
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          data-toggle="modal"
+          data-target="#searchModal"
+        >
+          Поиск
+        </button>
+        {% if request.GET.search_date %}
+        <a class="btn btn-outline-primary" href="{{ related_facility.get_absolute_url }}">Сбросить фильтр</a>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -128,4 +143,20 @@
   </footer>
   {% endif %}
 </section>
+
+<div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Поиск по дате</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true"><i class="fas fa-times"></i></span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {% crispy search_form search_form.helper %}
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock main_content %}

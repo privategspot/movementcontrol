@@ -164,3 +164,24 @@ class SearchEntryForm(forms.Form):
         widget=forms.Select(),
         choices=PREDICATS,
     )
+
+
+class SearchListForm(forms.Form):
+
+    def __init__(self, action, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.disable_csrf = True
+        self.helper.form_method = "GET"
+        self.helper.form_action = action
+        self.helper.add_input(Submit("submit", "Найти"))
+
+    search_date = forms.DateField(
+        widget=forms.DateInput(
+            attrs={
+                "type": "date",
+                "min": timezone.now().strftime("%Y-%m-%d")
+            }
+        ),
+        label="Дата"
+    )
