@@ -3,6 +3,7 @@ import pdfkit
 from django.contrib import messages
 from django.utils import timezone
 from django.urls import reverse
+from django.http import HttpResponseRedirect
 from django.views.generic.list import ListView
 from django.views.generic.edit import FormView
 from django.views.generic.edit import UpdateView, DeleteView
@@ -18,7 +19,7 @@ from ..models import FacilityObject, MovementList, Employee, MovementEntry,\
     MovementEntryHistory
 from ..forms import CreateMovementEntryForm, EditMovementEntryForm,\
     SearchEntryForm
-from ..utils import get_paginator_baseurl, datetime_to_current_tz
+from ..utils import datetime_to_current_tz
 from ..utils.link import Link
 
 
@@ -52,8 +53,12 @@ class MovementListEntries(FacilityListMixin, ListView):
         user = self.request.user
         out = []
         for entry in entries:
-            change = entry.has_change_perm(user)
-            delete = entry.has_delete_perm(user)
+            change = entry.has_change_perm(user)\
+                and not self.related_list.is_deleted\
+                and not entry.is_deleted
+            delete = entry.has_delete_perm(user)\
+                and not self.related_list.is_deleted\
+                and not entry.is_deleted
             out.append(
                 {
                     "obj": entry,
@@ -108,7 +113,9 @@ def movement_list_entries_PDF(request, **kwargs):
     context["header"] = related_facility.name
     context["related_facility"] = related_facility
     context["related_list"] = related_list
-    context["entries"] = related_list.movemententry_set.all().order_by("-pk")
+    context["entries"] = related_list.movemententry_set.filter(
+        is_deleted=False
+    ).order_by("-pk")
 
     template = get_template(
         "main/movement-list-entries/movement-list-entries-print.html"
@@ -172,7 +179,8 @@ class MovementListEntriesAdd(UserPassesTestMixin, FacilityListMixin, FormView):
 
     def test_func(self):
         user = self.request.user
-        return user.has_perm("main.add_movemententry")
+        return user.has_perm("main.add_movemententry")\
+            and not self.related_list.is_deleted
 
     def form_valid(self, form):
         data = form.cleaned_data
@@ -191,7 +199,7 @@ class MovementListEntriesAdd(UserPassesTestMixin, FacilityListMixin, FormView):
         return super().form_valid(form)
 
 
-class MovementListEntryEdit(UserPassesTestMixin, FacilityListMixin, UpdateView):
+class MovementListEntryEdit(UserPassesTestMixin, FacilityListMixin, FormView):
 
     form_class = EditMovementEntryForm
     template_name = "main/movement-list-entries/movement-list-entries-edit.html"
@@ -251,11 +259,12 @@ class MovementListEntryEdit(UserPassesTestMixin, FacilityListMixin, UpdateView):
         cur_entry = self.get_object()
         print(cur_entry)
         can_change = cur_entry.has_change_perm(user)
-        return can_change
+        return can_change and not self.related_list.is_deleted
 
     def form_valid(self, form):
         data = form.cleaned_data
-        cur_employee = self.get_object().employee
+        cur_entry = self.get_object()
+        cur_employee = cur_entry.employee
 
         # Сериализируем данные до внесения изменения
         old_data = cur_employee.toJSON()
@@ -266,6 +275,9 @@ class MovementListEntryEdit(UserPassesTestMixin, FacilityListMixin, UpdateView):
         cur_employee.patronymic = data["patronymic"]
         cur_employee.position = data["position"]
         cur_employee.save()
+
+        cur_entry.was_modified = True
+        cur_entry.save()
 
         # Сериализируем данные после внесения изменения
         new_data = cur_employee.toJSON()
@@ -296,7 +308,8 @@ class MovementListEntryDelete(UserPassesTestMixin, FacilityListMixin, DeleteView
         ])
 
     def get_object(self):
-        return self.related_list.movemententry_set.get(
+        return get_object_or_404(
+            self.related_list.movemententry_set,
             pk=self.kwargs["entry_id"]
         )
 
@@ -313,11 +326,18 @@ class MovementListEntryDelete(UserPassesTestMixin, FacilityListMixin, DeleteView
         user = self.request.user
         cur_entry = self.get_object()
         can_change = cur_entry.has_change_perm(user)
-        return can_change
+        return can_change and not self.related_list.is_deleted
+
+    def delete(self):
+        obj = self.get_object()
+        success_url = self.get_success_url()
+        obj.is_deleted = True
+        obj.save()
+        return HttpResponseRedirect(success_url)
 
     def post(self, request, *args, **kwargs):
         messages.success(self.request, "Запись успешно удалена")
-        return super().post(request, *args, **kwargs)
+        return self.delete()
 
 
 class MovementListEntryHistory(FacilityListMixin, ListView):

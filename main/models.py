@@ -73,6 +73,7 @@ class Employee(AbstractPerson):
 
     def toJSON(self):
         return serializers.serialize("json", [self])
+
     class Meta:
         verbose_name = "Сотрудник"
         verbose_name_plural = "Сотрудники"
@@ -153,8 +154,16 @@ class MovementList(models.Model):
         auto_now_add=True
     )
     last_modified = models.DateTimeField(
-        "Время последнего изменения",
+        "Время последнего изменения модели",
         auto_now=True
+    )
+    was_modified = models.BooleanField(
+        "Был ли список изменен?",
+        default=False
+    )
+    is_deleted = models.BooleanField(
+        "Удалён?",
+        default=False
     )
 
     @property
@@ -181,7 +190,7 @@ class MovementList(models.Model):
         """
         Возвращает True, если запись была изменена, иначе False
         """
-        return True if self.creation_datetime != self.last_modified else False
+        return self.was_modified
 
     def get_url_kwargs(self):
         return {
@@ -297,13 +306,21 @@ class MovementEntry(models.Model):
         "Время последнего изменения",
         auto_now=True
     )
+    is_deleted = models.BooleanField(
+        "Удалён?",
+        default=False
+    )
+    was_modified = models.BooleanField(
+        "Был ли список изменен?",
+        default=False
+    )
 
     @property
     def was_changed(self):
         """
         Возвращает True, если запись была изменена, иначе False
         """
-        return True if self.creation_datetime != self.last_modified else False
+        return self.was_modified
 
     def get_url_kwargs(self):
         return {

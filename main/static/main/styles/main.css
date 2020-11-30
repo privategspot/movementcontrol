@@ -8,3 +8,25 @@
 .table-cell-pd {
     padding: 0.4em 0.8em;
 }
+
+tr.strikeout td {
+    position:relative;
+}
+
+tr.strikeout td:before {
+    content: " ";
+    position: absolute;
+    left: 0;
+    top: 55%; 
+    width: 100%;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.7);
+}
+
+tr.strikeout th:before {
+    content: " ";
+    position: absolute;
+    left: 0;
+    top: 55%; 
+    width: 100%;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.7);
+}

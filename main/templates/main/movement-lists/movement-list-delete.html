@@ -14,7 +14,8 @@
         <div class="card-body">
           <h2 class="card-title h5">Подтверждение удаления</h5>
           <p class="card-text">
-          Вы уверены, что хотите удалить этот список?
+          Вы уверены, что хотите удалить этот список?<br>
+          После этого действия со списком будут недоступны
           </p>
           <form action="{% url 'movement-list-delete' facility_slug=related_facility.slug list_id=related_list.pk %}" method="POST">
             {% csrf_token %}

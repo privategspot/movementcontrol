@@ -31,7 +31,7 @@
       {% breadcrumbs links %}
 
       <ul class="nav nav-pills">
-        {% if perms.main.add_movemententry %}
+        {% if perms.main.add_movemententry and not related_list.is_deleted %}
         <li class="nav-item">
           <a class="nav-link active" href="{{ related_list.get_absolute_url }}">Записи</a>
         </li>

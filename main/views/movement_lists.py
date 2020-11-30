@@ -1,4 +1,3 @@
-import pytz
 import datetime
 
 from django.contrib import messages
@@ -7,9 +6,9 @@ from django.core import serializers
 from django.utils import timezone
 from django.views.generic.list import ListView
 from django.views.generic.edit import FormView
-from django.views.generic.edit import UpdateView, DeleteView
+from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import UserPassesTestMixin
-from movementcontrol.settings import TIME_ZONE
+from django.http import HttpResponseRedirect
 
 from .mixins import FacilityMixin, FacilityListMixin
 from ..models import MovementList,\
@@ -39,8 +38,8 @@ class MovementLists(FacilityMixin, ListView):
         user = self.request.user
         out = []
         for mlist in movement_lists:
-            change = mlist.has_change_perm(user)
-            delete = mlist.has_delete_perm(user)
+            change = mlist.has_change_perm(user) and not mlist.is_deleted
+            delete = mlist.has_delete_perm(user) and not mlist.is_deleted
             out.append(
                 {
                     "obj": mlist,
@@ -126,7 +125,7 @@ class MovementListEdit(UserPassesTestMixin, FacilityListMixin, FormView):
     def test_func(self):
         user = self.request.user
         cur_list = self.get_object()
-        can_change = cur_list.has_change_perm(user)
+        can_change = cur_list.has_change_perm(user) and not cur_list.is_deleted
         return can_change
 
     def get_breadcrumbs_links(self):
@@ -171,6 +170,7 @@ class MovementListEdit(UserPassesTestMixin, FacilityListMixin, FormView):
             data["move_time"],
         )
         cur_list.scheduled_datetime = new_scheduled_datetime
+        cur_list.was_modified = True
         cur_list.save()
 
         # Сериализируем данные после внесения изменения
@@ -207,7 +207,7 @@ class MovementListDelete(UserPassesTestMixin, FacilityListMixin, DeleteView):
     def test_func(self):
         user = self.request.user
         cur_list = self.get_object()
-        can_delete = cur_list.has_delete_perm(user)
+        can_delete = cur_list.has_delete_perm(user) and not cur_list.is_deleted
         return can_delete
 
     def get_context_data(self, **kwargs):
@@ -218,9 +218,16 @@ class MovementListDelete(UserPassesTestMixin, FacilityListMixin, DeleteView):
         context["related_list"] = self.related_list
         return context
 
+    def delete(self):
+        obj = self.get_object()
+        obj.is_deleted = True
+        obj.save()
+        success_url = self.get_success_url()
+        return HttpResponseRedirect(success_url)
+
     def post(self, request, *args, **kwargs):
-        messages.success(self.request, "Список успешно удалён")
-        return super().post(request, *args, **kwargs)
+        messages.success(self.request, "Список помечен как удаленный")
+        return self.delete()
 
 
 class MovementListHistory(FacilityListMixin, ListView):

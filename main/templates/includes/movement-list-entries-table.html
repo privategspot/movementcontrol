@@ -8,11 +8,19 @@
   </thead>
   <tbody>
     {% for entry in entries %}
-    <tr class="d-flex">
-      <th class="table-cell-pd col-2"  scope="row">{{ forloop.counter }}</th>
+    {% if entry.obj.is_deleted %}
+    <tr class="d-flex strikeout">
+      <th class="table-cell-pd col-2" scope="row">{{ forloop.counter }}</th>
       <td class="table-cell-pd col-6">{{ entry.obj.employee.initials }}</td>
       <td class="table-cell-pd col-4">{{ entry.obj.employee.position }}</td>
     </tr>
+    {% else %}
+    <tr class="d-flex">
+      <th class="table-cell-pd col-2" scope="row">{{ forloop.counter }}</th>
+      <td class="table-cell-pd col-6">{{ entry.obj.employee.initials }}</td>
+      <td class="table-cell-pd col-4">{{ entry.obj.employee.position }}</td>
+    </tr>
+    {% endif %}
     {% endfor %}
   </tbody>
 </table>
