@@ -13,7 +13,10 @@
               {{ entry.obj.employee.position }} {{ entry.obj.employee.initials }}
               {% endif %}
               {% if entry.obj.was_changed %}
-              <span class="badge badge-info ml-1">Изменено</span>
+              <span class="badge badge-info ml-1">изменена</span>
+              {% endif %}
+              {% if entry.obj.is_deleted %}
+              <span class="badge badge-danger ml-1">удалена</span>
               {% endif %}
             </h5>
             <p class="card-text">
