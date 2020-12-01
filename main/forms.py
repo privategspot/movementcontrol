@@ -155,7 +155,7 @@ class SearchEntryForm(forms.Form):
 
     PREDICATS = [
         ("EMPLOYEES", "ФИО сотрудника"),
-        ("USERS", "ФИО автора"),
+        ("USERS", "ФИО ответственного"),
     ]
 
     search_request = forms.CharField(label="Запрос")
