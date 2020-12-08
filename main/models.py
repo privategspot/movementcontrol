@@ -172,7 +172,7 @@ class MovementList(models.Model):
         Метод возвращает человекочитаемую строку,
         определяющую тип списка в именительном падеже
         единственного числа.
-        Например: "заезд" или "отъезд".
+        Например: "заезд" или "выезд".
         """
         arriving_value = self.TYPES_OF_LIST[0][1]
         leaving_value = self.TYPES_OF_LIST[1][1]
@@ -238,8 +238,8 @@ class MovementList(models.Model):
 
     class Meta:
 
-        verbose_name = "Список заездов/отъездов"
-        verbose_name_plural = "Списки заездов/отъездов"
+        verbose_name = "Список заездов/выездов"
+        verbose_name_plural = "Списки заездов/выездов"
 
         permissions = [
             (
