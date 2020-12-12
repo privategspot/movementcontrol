@@ -150,8 +150,8 @@ class MovementListModelTests(TestCase):
 
     def setUp(self):
         self.facility = FacilityObject.objects.get(slug="shanuch-mine")
-        self.creator = get_user_model().objects.get(pk=1)
-        self.movement_list = MovementList.objects.get(pk=1)
+        self.creator = get_user_model().objects.get(username="user1")
+        self.movement_list = MovementList.objects.first()
 
     def test_verbose_name(self):
         verbose_name = self.movement_list._meta.verbose_name
