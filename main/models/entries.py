@@ -73,27 +73,32 @@ class MovementEntry(models.Model):
         }
 
     def get_add_url(self):
+        kwargs = self.get_url_kwargs()
+        del kwargs["entry_id"]
         return reverse(
             "movement-list-entries-add",
-            args=[self.movement_list.facility.slug, self.movement_list.pk]
+            kwargs=kwargs,
         )
 
     def get_delete_url(self):
+        kwargs = self.get_url_kwargs()
         return reverse(
             "movement-list-entry-delete",
-            kwargs=self.get_url_kwargs()
+            kwargs=kwargs,
         )
 
     def get_edit_url(self):
+        kwargs = self.get_url_kwargs()
         return reverse(
             "movement-list-entry-edit",
-            kwargs=self.get_url_kwargs()
+            kwargs=kwargs,
         )
 
     def get_history_url(self):
+        kwargs = self.get_url_kwargs()
         return reverse(
             "movement-list-entry-history",
-            kwargs=self.get_url_kwargs()
+            kwargs=kwargs,
         )
 
     def is_creator(self, user):
@@ -101,16 +106,15 @@ class MovementEntry(models.Model):
 
     def has_change_perm(self, user):
         is_creator = self.is_creator(user)
-        has_perm = user.has_perm("main.change_owned_movemententry")
-        return is_creator and has_perm or user.has_perm(
-            "main.change_movemententry"
-        )
+        can_change_owned = user.has_perm("main.change_owned_movemententry")
+        can_change = user.has_perm("main.change_movemententry")
+        return is_creator and can_change_owned or can_change
 
     def has_delete_perm(self, user):
-        is_creator = self.is_creator(user) and user.has_perm(
-            "main.delete_owned_movemententry"
-        )
-        return is_creator or user.has_perm("main.delete_movemententry")
+        can_delete_owned = user.has_perm("main.delete_owned_movemententry")
+        is_creator = self.is_creator(user)
+        can_delete = user.has_perm("main.delete_movemententry")
+        return is_creator and can_delete_owned or can_delete
 
     def __str__(self):
         datetime = self.creation_datetime

@@ -15,10 +15,18 @@ class FacilityObject(models.Model):
         unique=True
     )
 
-    def get_absolute_url(self):
-        return reverse("movement-lists", kwargs={
+    def get_url_kwargs(self):
+        kwargs = {
             "facility_slug": self.slug,
-        })
+        }
+        return kwargs
+
+    def get_absolute_url(self):
+        kwargs = self.get_url_kwargs()
+        return reverse(
+            "movement-lists",
+            kwargs=kwargs
+        )
 
     def __str__(self):
         return self.name

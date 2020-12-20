@@ -112,16 +112,16 @@ class MovementList(models.Model):
         return self.creator == user
 
     def has_change_perm(self, user):
-        is_creator = self.is_creator(user) and user.has_perm(
-            "main.change_owned_movementlist"
-        )
-        return is_creator or user.has_perm("main.change_movementlist")
+        is_creator = self.is_creator(user)
+        can_change_owned = user.has_perm("main.change_owned_movementlist")
+        can_change = user.has_perm("main.change_movementlist")
+        return is_creator and can_change_owned or can_change
 
     def has_delete_perm(self, user):
-        is_creator = self.is_creator(user) and user.has_perm(
-            "main.delete_owned_movementlist"
-        )
-        return is_creator or user.has_perm("main.delete_movementlist")
+        is_creator = self.is_creator(user)
+        can_delete_owned = user.has_perm("main.delete_owned_movementlist")
+        can_delete = user.has_perm("main.delete_movementlist")
+        return is_creator and can_delete_owned or can_delete
 
     def __str__(self):
         return "%s на %s" % (
