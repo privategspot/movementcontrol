@@ -75,14 +75,13 @@ class MovementListEntries(FacilityListMixin, ListView):
         ]
 
     def get_suggestions_list(self):
-        first_name_sug = MovementEntry.objects.get_autocomplete_suggestions("first_name")
-        last_name_sug = MovementEntry.objects.get_autocomplete_suggestions("last_name")
-        patronymic_sug = MovementEntry.objects.get_autocomplete_suggestions("patronymic")
-        return [
-            *first_name_sug,
-            *last_name_sug,
-            *patronymic_sug,
-        ]
+        fields = ["first_name", "last_name", "patronymic"]
+        suggestions = []
+        for field in fields:
+            suggestions.extend(
+                MovementEntry.objects.get_autocomplete_suggestions(field)
+            )
+        return suggestions
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
