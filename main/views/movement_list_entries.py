@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.views.generic.list import ListView
 from django.views.generic.edit import FormView
-from django.views.generic.edit import UpdateView, DeleteView
+from django.views.generic.edit import DeleteView
 from django.template.loader import get_template
 from django.views.decorators.http import require_safe
 from django.http import HttpResponse
@@ -70,8 +70,14 @@ class MovementListEntries(FacilityListMixin, ListView):
 
     def get_breadcrumbs_links(self):
         return [
-            Link(self.related_facility.get_absolute_url(), self.related_facility),
-            Link(self.related_list.get_absolute_url(), self.related_list),
+            Link(
+                self.related_facility.get_absolute_url(),
+                self.related_facility,
+            ),
+            Link(
+                self.related_list.get_absolute_url(),
+                self.related_list,
+            ),
         ]
 
     def get_suggestions_list(self):
@@ -85,11 +91,11 @@ class MovementListEntries(FacilityListMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        search_action = self.related_list.get_absolute_url()
         context["header"] = self.related_facility.name
         context["related_facility"] = self.related_facility
         context["facilities"] = self.all_facilities
         context["related_list"] = self.related_list
-        search_action = self.related_list.get_absolute_url()
         context["search_form"] = SearchEntryForm(
             search_action,
             suggestions=self.get_suggestions_list()
@@ -144,10 +150,14 @@ class MovementListEntriesAdd(UserPassesTestMixin, FacilityListMixin, FormView):
         )
 
     def get_suggestions_dict(self):
-        first_name_sug = MovementEntry.objects.get_autocomplete_suggestions("first_name")
-        last_name_sug = MovementEntry.objects.get_autocomplete_suggestions("last_name")
-        patronymic_sug = MovementEntry.objects.get_autocomplete_suggestions("patronymic")
-        position_sug = MovementEntry.objects.get_autocomplete_suggestions("position")
+        first_name_sug =\
+            MovementEntry.objects.get_autocomplete_suggestions("first_name")
+        last_name_sug =\
+            MovementEntry.objects.get_autocomplete_suggestions("last_name")
+        patronymic_sug =\
+            MovementEntry.objects.get_autocomplete_suggestions("patronymic")
+        position_sug =\
+            MovementEntry.objects.get_autocomplete_suggestions("position")
         return {
             "first_name": first_name_sug,
             "last_name": last_name_sug,
@@ -162,9 +172,18 @@ class MovementListEntriesAdd(UserPassesTestMixin, FacilityListMixin, FormView):
 
     def get_breadcrumbs_links(self):
         return [
-            Link(self.related_facility.get_absolute_url(), self.related_facility),
-            Link(self.related_list.get_absolute_url(), self.related_list),
-            Link(self.related_list.get_add_url(), "Добавление записи"),
+            Link(
+                self.related_facility.get_absolute_url(),
+                self.related_facility,
+            ),
+            Link(
+                self.related_list.get_absolute_url(),
+                self.related_list,
+            ),
+            Link(
+                self.related_list.get_add_url(),
+                "Добавление записи",
+            ),
         ]
 
     def get_context_data(self, **kwargs):
@@ -178,8 +197,8 @@ class MovementListEntriesAdd(UserPassesTestMixin, FacilityListMixin, FormView):
 
     def test_func(self):
         user = self.request.user
-        return user.has_perm("main.add_movemententry")\
-            and not self.related_list.is_deleted
+        can_add = user.has_perm("main.add_movemententry")
+        return can_add and not self.related_list.is_deleted
 
     def form_valid(self, form):
         data = form.cleaned_data
@@ -201,7 +220,8 @@ class MovementListEntriesAdd(UserPassesTestMixin, FacilityListMixin, FormView):
 class MovementListEntryEdit(UserPassesTestMixin, FacilityListMixin, FormView):
 
     form_class = EditMovementEntryForm
-    template_name = "main/movement-list-entries/movement-list-entries-edit.html"
+    template_name =\
+        "main/movement-list-entries/movement-list-entries-edit.html"
     pk_url_kwarg = "entry_id"
 
     @property
@@ -235,11 +255,17 @@ class MovementListEntryEdit(UserPassesTestMixin, FacilityListMixin, FormView):
 
     def get_breadcrumbs_links(self):
         return [
-            Link(self.related_facility.get_absolute_url(), self.related_facility),
-            Link(self.related_list.get_absolute_url(), self.related_list),
+            Link(
+                self.related_facility.get_absolute_url(),
+                self.related_facility,
+            ),
+            Link(
+                self.related_list.get_absolute_url(),
+                self.related_list,
+            ),
             Link(
                 self.get_object().get_edit_url(),
-                self.get_object().employee.full_name + ", редактирование"
+                self.get_object().employee.full_name + ", редактирование",
             ),
         ]
 
@@ -256,7 +282,6 @@ class MovementListEntryEdit(UserPassesTestMixin, FacilityListMixin, FormView):
     def test_func(self):
         user = self.request.user
         cur_entry = self.get_object()
-        print(cur_entry)
         can_change = cur_entry.has_change_perm(user)
         return can_change and not self.related_list.is_deleted
 
@@ -294,11 +319,16 @@ class MovementListEntryEdit(UserPassesTestMixin, FacilityListMixin, FormView):
         return super().form_valid(form)
 
 
-class MovementListEntryDelete(UserPassesTestMixin, FacilityListMixin, DeleteView):
+class MovementListEntryDelete(
+            UserPassesTestMixin,
+            FacilityListMixin,
+            DeleteView,
+        ):
 
     model = MovementEntry
     pk_url_kwarg = "entry_id"
-    template_name = "main/movement-list-entries/movement-list-entries-delete.html"
+    template_name =\
+        "main/movement-list-entries/movement-list-entries-delete.html"
 
     def get_success_url(self):
         return reverse("movement-list-entries", args=[
@@ -341,7 +371,8 @@ class MovementListEntryDelete(UserPassesTestMixin, FacilityListMixin, DeleteView
 
 class MovementListEntryHistory(FacilityListMixin, ListView):
 
-    template_name = "main/movement-list-entries/movement-list-entry-history.html"
+    template_name =\
+        "main/movement-list-entries/movement-list-entry-history.html"
     context_object_name = "history_entries"
 
     def get_entry(self):
@@ -367,11 +398,17 @@ class MovementListEntryHistory(FacilityListMixin, ListView):
 
     def get_breadcrumbs_links(self):
         return [
-            Link(self.related_facility.get_absolute_url(), self.related_facility),
-            Link(self.related_list.get_absolute_url(), self.related_list),
+            Link(
+                self.related_facility.get_absolute_url(),
+                self.related_facility,
+            ),
+            Link(
+                self.related_list.get_absolute_url(),
+                self.related_list,
+            ),
             Link(
                 self.get_entry().get_history_url(),
-                self.get_entry().employee.full_name + ", история изменений"
+                self.get_entry().employee.full_name + ", история изменений",
             ),
         ]
 

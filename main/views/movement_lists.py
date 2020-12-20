@@ -13,7 +13,8 @@ from django.http import HttpResponseRedirect
 from .mixins import FacilityMixin, FacilityListMixin
 from ..models import MovementList,\
     MovementListHistory as MovementListHistoryModel
-from ..forms import CreateMovementListForm, EditMovementListForm, SearchListForm
+from ..forms import CreateMovementListForm, EditMovementListForm,\
+    SearchListForm
 from ..utils import get_paginator_baseurl, datetime_to_current_tz
 from ..utils.link import Link
 
@@ -28,7 +29,8 @@ class MovementLists(FacilityMixin, ListView):
 
     def get_queryset(self):
         get_params = self.request.GET
-        movement_lists = self.related_facility.movementlist_set.all().order_by("-pk")
+        movement_lists =\
+            self.related_facility.movementlist_set.all().order_by("-pk")
         show = get_params.get("show", "")
         if show == "arrivals":
             movement_lists = movement_lists.filter(list_type="ARR")
@@ -38,7 +40,9 @@ class MovementLists(FacilityMixin, ListView):
         search_date = get_params.get("search_date", False)
         if search_date:
             print("request")
-            movement_lists = movement_lists.filter(scheduled_datetime__contains=search_date)
+            movement_lists = movement_lists.filter(
+                scheduled_datetime__contains=search_date
+            )
 
         user = self.request.user
         out = []
@@ -137,9 +141,18 @@ class MovementListEdit(UserPassesTestMixin, FacilityListMixin, FormView):
 
     def get_breadcrumbs_links(self):
         return [
-            Link(self.related_facility.get_absolute_url(), self.related_facility),
-            Link(self.related_list.get_absolute_url(), self.related_list),
-            Link(self.related_list.get_edit_url(), "Перенос даты"),
+            Link(
+                self.related_facility.get_absolute_url(),
+                self.related_facility,
+            ),
+            Link(
+                self.related_list.get_absolute_url(),
+                self.related_list,
+            ),
+            Link(
+                self.related_list.get_edit_url(),
+                "Перенос даты",
+            ),
         ]
 
     def get_context_data(self, **kwargs):
@@ -273,9 +286,18 @@ class MovementListHistory(FacilityListMixin, ListView):
 
     def get_breadcrumbs_links(self):
         return [
-            Link(self.related_facility.get_absolute_url(), self.related_facility),
-            Link(self.related_list.get_absolute_url(), self.related_list),
-            Link(self.related_list.get_history_url(), "История изменений"),
+            Link(
+                self.related_facility.get_absolute_url(),
+                self.related_facility,
+            ),
+            Link(
+                self.related_list.get_absolute_url(),
+                self.related_list,
+            ),
+            Link(
+                self.related_list.get_history_url(),
+                "История изменений",
+            ),
         ]
 
     def get_context_data(self, **kwargs):
