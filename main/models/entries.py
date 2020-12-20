@@ -13,6 +13,8 @@ class MovementEntryManager(models.Manager):
     def get_autocomplete_suggestions(self, field):
         entries = super().all().distinct()
         values = entries.values_list("employee__" + field, flat=True)
+        users_values = entries.values_list("creator__" + field, flat=True)
+        values = list(values) + list(users_values)
         return values
 
 
