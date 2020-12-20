@@ -98,11 +98,14 @@ class User(AbstractUser):
 
     @property
     def initials(self):
-        initials = "%s %s." % (
-            self.last_name,
-            self.first_name[0],
-        )
-        if len(self.patronymic):
+        if self.first_name and self.last_name:
+            initials = "%s %s." % (
+                self.last_name,
+                self.first_name[0],
+            )
+        else:
+            return "*данные отсутсвуют*"
+        if self.patronymic:
             initials = initials + self.patronymic[0] + "."
         return initials
 
