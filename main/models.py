@@ -71,6 +71,11 @@ class AbstractPerson(models.Model):
 
 class Employee(AbstractPerson):
 
+    is_senior = models.BooleanField(
+        "Старший",
+        default=False,
+    )
+
     def toJSON(self):
         return serializers.serialize("json", [self])
 
@@ -167,6 +172,16 @@ class MovementList(models.Model):
     is_deleted = models.BooleanField(
         "Удалён?",
         default=False
+    )
+    place = models.CharField(
+        "Место выезда/заезда",
+        max_length=255,
+        blank=True,
+    )
+    watch = models.CharField(
+        "Вахта",
+        max_length=255,
+        blank=True,
     )
 
     @property
