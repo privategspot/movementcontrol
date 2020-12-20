@@ -27,7 +27,7 @@ class MovementList(models.Model):
         choices=TYPES_OF_LIST,
         default=ARRIVING
     )
-    scheduled_datetime = models.DateTimeField("Дата и время заезда/отъезда")
+    scheduled_datetime = models.DateTimeField("Дата и время заезда/выезда")
     creator = models.ForeignKey(
         get_user_model(),
         on_delete=models.SET_NULL,

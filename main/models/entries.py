@@ -20,7 +20,7 @@ class MovementEntryManager(models.Manager):
 
 class MovementEntry(models.Model):
     """
-    Запись содержащая информацию о заезде/отъезде
+    Запись содержащая информацию о заезде/выезде
     сотрудников на производственный объект
     """
 
@@ -130,8 +130,8 @@ class MovementEntry(models.Model):
 
     class Meta:
 
-        verbose_name = "Запись о заезде/отъезде"
-        verbose_name_plural = "Записи о заездах/отъездах"
+        verbose_name = "Запись о заезде/выезде"
+        verbose_name_plural = "Записи о заездах/выездах"
 
         permissions = [
             (

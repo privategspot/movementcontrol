@@ -61,7 +61,7 @@ class MovementLists(FacilityMixin, ListView):
         elif cur_get["show"] == "arrivals":
             return "только заезды"
         elif cur_get["show"] == "departures":
-            return "только отъезды"
+            return "только выезды"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
