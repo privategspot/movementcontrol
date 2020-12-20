@@ -92,6 +92,7 @@ class CreateMovementEntryForm(forms.Form):
         min_length=0,
         max_length=100,
         label="Должность",
+        required=False,
     )
 
     field_order = [
@@ -121,7 +122,7 @@ class CreateMovementEntryForm(forms.Form):
             name="patronymic_sug"
         )
         self.fields["position"].widget = ListTextWidget(
-            attrs={"autocomplete": "off"},
+            attrs={"placeholder": "Водитель", "autocomplete": "off"},
             data_list=_suggestions.get("position", []),
             name="position_sug",
         )
