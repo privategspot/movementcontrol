@@ -51,7 +51,7 @@ class MovementList(models.Model):
         default=False
     )
     place = models.CharField(
-        "Место выезда/заезда",
+        "Место заезда/выезда",
         max_length=255,
         blank=True,
     )
