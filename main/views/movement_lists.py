@@ -112,6 +112,7 @@ class MovementListsAdd(UserPassesTestMixin, FacilityMixin, FormView):
                 data["move_time"],
             ),
             creator=self.request.user,
+            place=data["place"],
         )
         messages.success(self.request, "Список успешно добавлен")
         return super().form_valid(form)
@@ -171,6 +172,7 @@ class MovementListEdit(UserPassesTestMixin, FacilityListMixin, FormView):
         return {
             "move_date": list_datetime.date,
             "move_time": list_datetime.time().strftime("%H:%M"),
+            "place": self.related_list.place,
         }
 
     def form_valid(self, form):
@@ -191,6 +193,7 @@ class MovementListEdit(UserPassesTestMixin, FacilityListMixin, FormView):
         )
         cur_list.scheduled_datetime = new_scheduled_datetime
         cur_list.was_modified = True
+        cur_list.place = data["place"]
         cur_list.save()
 
         # Сериализируем данные после внесения изменения

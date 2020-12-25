@@ -23,6 +23,13 @@ class CustomUserChangeForm(UserChangeForm):
 
 class CreateMovementListForm(forms.ModelForm):
 
+    field_order = [
+        "list_type",
+        "move_date",
+        "move_time",
+        "place",
+    ]
+
     move_date = forms.DateField(
         widget=forms.DateInput(
             attrs={
@@ -45,7 +52,14 @@ class CreateMovementListForm(forms.ModelForm):
 
     class Meta:
         model = MovementList
-        fields = ["list_type"]
+        fields = ["list_type", "place"]
+        widgets = {
+            "place": forms.TextInput(
+                attrs={
+                    "placeholder": "С какого места выезжает/заезжает сотрудник"
+                },
+            ),
+        }
 
 
 class EditMovementListForm(forms.Form):
@@ -67,6 +81,15 @@ class EditMovementListForm(forms.Form):
             }
         ),
         label="Время"
+    )
+    place = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "С какого места выезжает/заезжает сотрудник",
+            },
+        ),
+        label="Место заезда/выезда",
+        required=False
     )
 
 

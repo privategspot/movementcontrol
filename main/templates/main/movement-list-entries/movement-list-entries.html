@@ -68,6 +68,23 @@
 
   <div class="row mt-2">
     <div class="col-md">
+      <ul class="list-unstyled">
+        <li>
+          <p class="h5 mt-4">
+            Дата и время {{ related_list.list_type_humanize }}а: 
+            {{related_list.scheduled_datetime|date:"d E Y H:i"}}
+          </p>
+        </li>
+        <li>
+          <p class="h5">Место {{ related_list.list_type_humanize }}а: 
+          {% if related_list.place %}
+          {{ related_list.place }}
+          {% else %}
+          не указано
+          {% endif %}
+          </p>
+        </li>
+      </ul>
       {% if entries %}
         {% if user.is_authenticated %}
           {% include "../../includes/movement-list-entries-detailed.html" with entries=entries %}

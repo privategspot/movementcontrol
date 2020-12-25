@@ -13,7 +13,7 @@
       {% breadcrumbs links %}
       <div class="card mt-4">
         {% url 'movement-list-edit' facility_slug=related_facility.slug list_id=related_list.pk as action %}
-        {% with title="Перенос даты" action=action method="POST" form=form button_value="Подтвердить" %}
+        {% with title="Редактирование списка" action=action method="POST" form=form button_value="Подтвердить" %}
         {% include "../../includes/crispy-form.html" %}
         {% endwith %}
       </div>

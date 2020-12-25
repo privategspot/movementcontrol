@@ -91,7 +91,7 @@
                       {{ mlist.obj.list_type_humanize|title }} на {{ mlist.obj.scheduled_datetime|date:"d E Y H:i" }}
                     {% endif %}
                       {% if mlist.obj.was_changed %}
-                      <span class="badge badge-info ml-1">перенесён</span>
+                      <span class="badge badge-info ml-1">изменён</span>
                       {% endif %}
                       {% if mlist.obj.is_deleted %}
                       <span class="badge badge-danger ml-1">удалён</span>
@@ -110,7 +110,7 @@
                         {{ mlist.obj.list_type_humanize|title }} на {{ mlist.obj.scheduled_datetime|date:"d E Y H:i" }}
                       {% endif %}
                       {% if mlist.obj.was_changed %}
-                      <span class="badge badge-info ml-1">перенесён</span>
+                      <span class="badge badge-info ml-1">изменён</span>
                       {% endif %}
                       {% if mlist.obj.is_deleted %}
                       <span class="badge badge-danger ml-1">удалён</span>
