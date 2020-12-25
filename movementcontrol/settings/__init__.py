@@ -1,4 +1,8 @@
-from .base import *
-from .production import *
-# from .development import *
-from .local_settings import *
+# в этом файле необходимо импортировать подходящие настройки
+# from .production import *  # настройки для рабочего окружения
+from .development import *  # настройки для разработки
+
+try:
+    from .local_settings import *
+except ImportError:
+    pass
