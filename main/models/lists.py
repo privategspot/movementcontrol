@@ -145,6 +145,10 @@ class MovementList(models.Model):
                 "delete_owned_movementlist",
                 "Право удаления списка созданного пользователем"
             ),
+            (
+                "set_watch_field",
+                "Право установки значения вахты",
+            )
         ]
 
 

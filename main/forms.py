@@ -23,6 +23,12 @@ class CustomUserChangeForm(UserChangeForm):
 
 class CreateMovementListForm(forms.ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        _user_perms = kwargs.pop("perms", None)
+        super(CreateMovementListForm, self).__init__(*args, **kwargs)
+        if "main.set_watch_field" not in _user_perms:
+            self.fields["watch"].widget = forms.HiddenInput()
+
     field_order = [
         "list_type",
         "move_date",
@@ -52,7 +58,7 @@ class CreateMovementListForm(forms.ModelForm):
 
     class Meta:
         model = MovementList
-        fields = ["list_type", "place"]
+        fields = ["list_type", "place", "watch"]
         widgets = {
             "place": forms.TextInput(
                 attrs={
@@ -63,6 +69,12 @@ class CreateMovementListForm(forms.ModelForm):
 
 
 class EditMovementListForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        _user_perms = kwargs.pop("perms", None)
+        super(EditMovementListForm, self).__init__(*args, **kwargs)
+        if "main.set_watch_field" not in _user_perms:
+            self.fields["watch"].widget = forms.HiddenInput()
 
     move_date = forms.DateField(
         widget=forms.DateInput(
@@ -90,6 +102,10 @@ class EditMovementListForm(forms.Form):
         ),
         label="Место заезда/выезда",
         required=False
+    )
+    watch = forms.CharField(
+        label="Вахта",
+        required=False,
     )
 
 

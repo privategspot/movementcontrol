@@ -102,6 +102,11 @@ class MovementListsAdd(UserPassesTestMixin, FacilityMixin, FormView):
         user = self.request.user
         return user.has_perm("main.add_movementlist")
 
+    def get_form_kwargs(self):
+        kwargs = super(MovementListsAdd, self).get_form_kwargs()
+        kwargs["perms"] = self.request.user.get_all_permissions()
+        return kwargs
+
     def form_valid(self, form):
         data = form.cleaned_data
         MovementList.objects.create(
@@ -112,6 +117,7 @@ class MovementListsAdd(UserPassesTestMixin, FacilityMixin, FormView):
                 data["move_time"],
             ),
             creator=self.request.user,
+            watch=data["watch"],
             place=data["place"],
         )
         messages.success(self.request, "Список успешно добавлен")
@@ -175,6 +181,11 @@ class MovementListEdit(UserPassesTestMixin, FacilityListMixin, FormView):
             "place": self.related_list.place,
         }
 
+    def get_form_kwargs(self):
+        kwargs = super(MovementListEdit, self).get_form_kwargs()
+        kwargs["perms"] = self.request.user.get_all_permissions()
+        return kwargs
+
     def form_valid(self, form):
         xml_serializer = serializers.get_serializer("xml")()
         data = form.cleaned_data
@@ -193,6 +204,7 @@ class MovementListEdit(UserPassesTestMixin, FacilityListMixin, FormView):
         )
         cur_list.scheduled_datetime = new_scheduled_datetime
         cur_list.was_modified = True
+        cur_list.watch = data["watch"]
         cur_list.place = data["place"]
         cur_list.save()
 

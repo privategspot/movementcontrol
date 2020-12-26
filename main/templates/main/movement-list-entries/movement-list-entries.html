@@ -84,6 +84,15 @@
           {% endif %}
           </p>
         </li>
+        <li>
+          <p class="h5">Вахта: 
+          {% if related_list.watch %}
+          {{ related_list.watch }}
+          {% else %}
+          не указана
+          {% endif %}
+          </p>
+        </li>
       </ul>
       {% if entries %}
         {% if user.is_authenticated %}
