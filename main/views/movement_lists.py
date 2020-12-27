@@ -179,6 +179,7 @@ class MovementListEdit(UserPassesTestMixin, FacilityListMixin, FormView):
             "move_date": list_datetime.date,
             "move_time": list_datetime.time().strftime("%H:%M"),
             "place": self.related_list.place,
+            "watch": self.related_list.watch,
         }
 
     def get_form_kwargs(self):
