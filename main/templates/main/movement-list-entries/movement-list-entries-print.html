@@ -17,20 +17,33 @@
     border: 1px solid black;
     border-collapse: collapse;
   }
+
+  .senior-row {
+    background-color: #ffeeba;
+  }
   </style>
 </head>
 <body>
-  <h1>{{ header }}</h1>
-  <h2>{{ related_list.list_type_humanize|title }} на {{ related_list.scheduled_datetime|date }}</h2>
+  <h1 style="font-size: 1.4rem; text-align: center;">
+    {{ header }}, {{ related_list.list_type_humanize }} 
+    на {{ related_list.scheduled_datetime|date:"d E Y H:i"}}
+  </h1>
+  <p style="font-size: 1.1rem;">
+    Место {{ related_list.list_type_humanize }}а: {{ related_list.place }}
+  </p>
   <table>
     <tr>
-      <th>Номер</th>
+      <th style="width: 5%;">#</th>
       <th>ФИО</th>
       <th>Должность</th>
     </tr>
     {% for entry in entries %}
+    {% if entry.employee.is_senior %}
+    <tr class="senior-row">
+    {% else %}
     <tr>
-      <td>{{ forloop.counter }}</td>
+    {% endif %}
+      <td style="text-align: center;">{{ forloop.counter }}</td>
       <td>{{ entry.employee.initials }}</td>
       <td>{{ entry.employee.position }}</td>
     </tr>
