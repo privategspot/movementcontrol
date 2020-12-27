@@ -68,7 +68,7 @@ class User(AbstractUser):
     first_name = models.CharField("Имя", max_length=40)
     last_name = models.CharField("Фамилия", max_length=40)
     patronymic = models.CharField("Отчество", max_length=40, blank=True)
-    position = models.CharField("Должность", max_length=100)
+    position = models.CharField("Должность", max_length=100, blank=True)
 
     @property
     def full_name(self):
