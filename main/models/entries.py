@@ -17,6 +17,9 @@ class MovementEntryManager(models.Manager):
         values = list(values) + list(users_values)
         return values
 
+    def get_not_deleted(self):
+        return super().all().filter(is_deleted=False)
+
 
 class MovementEntry(models.Model):
     """

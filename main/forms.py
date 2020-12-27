@@ -134,6 +134,11 @@ class CreateMovementEntryForm(forms.Form):
         required=False,
     )
 
+    is_senior = forms.BooleanField(
+        label="Старший",
+        required=False,
+    )
+
     field_order = [
         "first_name",
         "last_name",
@@ -143,6 +148,7 @@ class CreateMovementEntryForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         _suggestions = kwargs.pop("suggestions", None)
+        _user_perms = kwargs.pop("perms", None)
         super(CreateMovementEntryForm, self).__init__(*args, **kwargs)
 
         self.fields["first_name"].widget = ListTextWidget(
@@ -166,8 +172,18 @@ class CreateMovementEntryForm(forms.Form):
             name="position_sug",
         )
 
+        if "main.can_set_is_senior" not in _user_perms:
+            self.fields["is_senior"].widget = forms.HiddenInput()
+
 
 class EditMovementEntryForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        _user_perms = kwargs.pop("perms", None)
+        super(EditMovementEntryForm, self).__init__(*args, **kwargs)
+
+        if "main.can_set_is_senior" not in _user_perms:
+            self.fields["is_senior"].widget = forms.HiddenInput()
 
     class Meta:
         model = Employee

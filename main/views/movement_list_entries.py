@@ -29,7 +29,8 @@ class MovementListEntries(FacilityListMixin, ListView):
     context_object_name = "entries"
 
     def get_queryset(self):
-        entries = self.related_list.movemententry_set.all().order_by("-pk")
+        entries = self.related_list.movemententry_set.get_not_deleted()
+        entries = entries.order_by("-pk")
         search_request = self.request.GET.get("search_request", False)
         if search_request:
             predicat = self.request.GET.get("predicat")
@@ -168,6 +169,7 @@ class MovementListEntriesAdd(UserPassesTestMixin, FacilityListMixin, FormView):
     def get_form_kwargs(self):
         kwargs = super(MovementListEntriesAdd, self).get_form_kwargs()
         kwargs["suggestions"] = self.get_suggestions_dict()
+        kwargs["perms"] = self.request.user.get_all_permissions()
         return kwargs
 
     def get_breadcrumbs_links(self):
@@ -206,7 +208,8 @@ class MovementListEntriesAdd(UserPassesTestMixin, FacilityListMixin, FormView):
             first_name=data["first_name"],
             last_name=data["last_name"],
             patronymic=data["patronymic"],
-            position=data["position"]
+            position=data["position"],
+            is_senior=data["is_senior"],
         )
         MovementEntry.objects.create(
             movement_list=self.related_list,
@@ -251,6 +254,7 @@ class MovementListEntryEdit(UserPassesTestMixin, FacilityListMixin, FormView):
             "last_name": obj.employee.last_name,
             "patronymic": obj.employee.patronymic,
             "position": obj.employee.position,
+            "is_senior": obj.employee.is_senior,
         }
 
     def get_breadcrumbs_links(self):
@@ -285,6 +289,11 @@ class MovementListEntryEdit(UserPassesTestMixin, FacilityListMixin, FormView):
         can_change = cur_entry.has_change_perm(user)
         return can_change and not self.related_list.is_deleted
 
+    def get_form_kwargs(self):
+        kwargs = super(MovementListEntryEdit, self).get_form_kwargs()
+        kwargs["perms"] = self.request.user.get_all_permissions()
+        return kwargs
+
     def form_valid(self, form):
         data = form.cleaned_data
         cur_entry = self.get_object()
@@ -298,6 +307,7 @@ class MovementListEntryEdit(UserPassesTestMixin, FacilityListMixin, FormView):
         cur_employee.last_name = data["last_name"]
         cur_employee.patronymic = data["patronymic"]
         cur_employee.position = data["position"]
+        cur_employee.is_senior = data["is_senior"]
         cur_employee.save()
 
         cur_entry.was_modified = True

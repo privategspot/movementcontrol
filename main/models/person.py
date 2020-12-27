@@ -55,6 +55,12 @@ class Employee(AbstractPerson):
     class Meta:
         verbose_name = "Сотрудник"
         verbose_name_plural = "Сотрудники"
+        permissions = [
+            (
+                "can_set_is_senior",
+                "Право устанавливать поле 'старший'",
+            ),
+        ]
 
 
 class User(AbstractUser):
